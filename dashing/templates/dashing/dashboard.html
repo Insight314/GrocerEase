@@ -1,0 +1,120 @@
+{% extends 'dashing/base.html' %}
+{% load staticfiles %}
+
+
+{% block stylesheets %}
+    <!--Custom component stylesheets-->
+    <link rel="stylesheet" href="{% static 'css/custom/menubar.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom/modals.css' %}">
+{% endblock %}
+
+<!-- Top navigational bar -->
+{% block menubar %}
+    <nav id="MenuBar" class="navbar navbar-inverse">
+          <ul class="nav navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#openDashboardFilters">Dashboard</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="#openSettings">Settings</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'auth_logout' %}">Logout</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="#addNewList">Add List</a></li>
+            <li class="nav-title">
+                <a>GrocerEase</a></li>
+          </ul>
+    </nav>
+{% endblock %}
+
+
+
+<!-- Menu Modals-->
+{% block modals %}
+    <!-- These are the popup menus accessible via the menu bar -->
+    <div id="openDashboardFilters" class="modalDialog">
+    	<div>
+    		<h3>Dashboard Filters</h3>
+    		<p>Dashboard filters go here</p>
+    		<a href="#close" type="button" class="btn btn-block btn-danger">Close</a>
+    	</div>
+    </div>
+    <div id="openSettings" class="modalDialog">
+    	<div>
+    		<h3>Settings</h3>
+    		<p>Settings go here</p>
+    		<a href="#close" type="button" class="btn btn-block btn-danger">Close</a>
+    	</div>
+    </div>
+    
+    <!-- Add new list modal-->
+    <div id="addNewList" class="modalDialog">
+    	<div>
+    		<h3>New List</h3>
+    		<div id="itemInputWrapper">
+                <div id="item1" class="input-group">
+                    <input type="text" class="form-control"></input>
+                    <span class="input-group-btn">
+                        <a id="removeItem" href="#" class="btn btn-secondary btn-danger" role="button">Remove</a>
+                    </span>
+                </div>
+            </div>
+            <div>
+                <div>
+                    <button id="addItemButton" class="btn btn-block">Add Item</button>
+                </div>
+            </div>
+            <div class="addListButtonWrapper">
+        		<a id="addListButton" href="#" role="button" class="btn btn-block btn-success">Save</a>
+    		</div>
+    		<div>
+        		<a href="#close" role="button" class="btn btn-block btn-danger">Cancel</a>
+    		</div>
+    	</div>
+    </div>
+{% endblock %}
+
+
+
+<!--Custom container for the dashboard-->
+<!-- Adds a div for widgets so I can add unique widget html to the dashboard -->
+{% block main_container %}
+<div id="container">
+    <div class="gridster fade" rv-each-grid="grids" rv-gridsterify="grid" rv-class-in="grid.active"><ul></ul></div>
+</div>
+
+<div id="overlayContainer">
+    <div class="overlay fade" rv-class-in="showingOverlay" rv-on-click="hideOverlay">
+        <div class="box" rv-each-dashboard="dashboards" rv-on-click="swapDashboard">{ dashboard.name }</div>
+        <div id="actionContainer">
+            <div class="action" id="rollingMenu" rv-if="rollingMenu">
+                <span rv-on-click="rollingMenu.toggle">Rolling Time</span>
+                <ul rv-class-in="rollingMenu.showing">
+                    <li rv-on-click="rollingMenu.set" data-time="60" style="transition-delay:0.3s">One minute</li>
+                    <li rv-on-click="rollingMenu.set" data-time="30" style="transition-delay:0.2s">30 seconds</li>
+                    <li rv-on-click="rollingMenu.set" data-time="5" style="transition-delay:0.1s">5 seconds</li>
+                    <li rv-on-click="rollingMenu.set" data-time="0" style="transition-delay:0s">Not rolling</li>
+                </ul>
+            </div>
+            <div class="action" rv-each-action="actions">
+                <span rv-on-click="action.func">{ action.name }</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="widgetContainers">
+    
+</div>
+{% endblock %}
+
+
+
+
+
+<!--{% block 'scripts' %}-->
+<!--<script type="text/javascript" src="{% static 'my/custom/script.js' %}"></script>-->
+<!--{% endblock %}-->
+
+<!--{% block 'config_file' %}-->
+<!--<script type="text/javascript" src="{% static 'my/custom/dashing-config.js' %}"></script>-->
+<!--{% endblock %}-->

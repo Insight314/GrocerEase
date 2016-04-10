@@ -1,0 +1,144 @@
+<!-- Since all lists are collaborative, this should be a base list html file
+     Templating saves time for creating the list types, may be easier to uniquely identify
+     every component so two instances of the same list do not have the same component ids -->
+     
+<!-- { var } refers to variable placed inside the widget's scope array -->
+<!--   This variable holds all attributes needed to fill the various containers-->
+
+<div id='widget' class="widgetContainer" data="NOT_CONFIGURED" >
+    <!-- Primary widget view, shows list details -->
+    <div id="listView">
+      <h1>{ title }</h1>
+      <ul id="allItemsListView">
+        <li id="listItem" rv-each-item="itemsData">
+          <!--<span class="itemID" >{ item.id }</span>-->
+          <span class="item">{ item.label }</span>
+          <!--<span class="value">{ item.value }</span>-->
+        </li>
+      </ul>
+      
+      <ul id="editButton">
+        <span><a type="button" class="btn btn-block btn-danger">Edit</a></span>
+      </ul>
+      
+      <ul id="settingsButton">
+        <span><a type="button" class="btn btn-block btn-primary">Settings</a></span>
+      </ul>
+      
+      <p class="updated-at" rv-show="updatedAt">{ updatedAt }</p>
+      
+    </div>
+    
+    
+    
+    <!-- Edit view, similar to list details with different buttons and ability to edit entries -->
+    <div id="editView" style="display: none;">
+      <h1>{ title }</h1>
+      <ul id="allItemsEditView">
+        <li id="editItem" rv-each-item="itemsData">
+          <div class="input-group">
+            <span id='label'>{ item.label }</span>
+            <span class="input-group-btn">
+              <a id='removeItem' class="btn btn-secondary btn-danger" role="button">Remove</a>
+            </span>
+          </div>
+        </li>
+        <li id="hiddenItem">  
+          <!-- Used to avoid .append. Is hidden until a new item is added -->
+          <!-- It will then be replaced by a new item and duplicate hidden class-->
+          <div class="input-group" type="hidden"></div>
+        </li>
+      </ul>
+      
+      <ul id="addNewItemButton" >
+        <span><a type="button" class="btn btn-block btn-success">New Item</a></span>
+      </ul>
+
+      <ul id="saveEditButton" >
+        <span><a type="button" class="btn btn-block btn-primary">Save Changes</a></span>
+      </ul>
+      
+      <ul id="cancelEditButton">
+        <span><a type="button" class="btn btn-block btn-danger">Cancel</a></span>
+      </ul>  
+
+    </div>
+    
+    
+    
+    <!-- Settings panel, the list details are fully covered by this panel -->
+    <div id="settingsView" style="display: none;">
+      <h1>List Settings</h1>
+      <ul>
+        <ul>
+          <span>Recurrence</span>
+          <ul>
+            <button type="button" class="btn btn-default btn-success">One-time</button>
+            <button type="button" class="btn btn-default btn-default">Repeat</button>
+          </ul>
+        </ul>
+
+        <ul>
+          <span>Tags</h3>
+          <ul>
+            <button type="button" class="btn btn-default btn-success">Healthy</button>
+            <button type="button" class="btn btn-default btn-default">Add new tag</button>
+          </ul>
+        </ul>
+
+        <ul>
+          <span>Shared with</span>
+          <ul>
+            <button type="button" class="btn btn-default btn-info">Chris D.</button>
+            <button type="button" class="btn btn-default btn-info">Kevin S.</button>
+            <button type="button" class="btn btn-default btn-info">Abel T.</button>
+          </ul>
+          <ul>
+            <button type="button" class="btn btn-default btn-default">Add new collaborator</button>
+          </ul>
+        </ul>
+        
+        <ul>
+          <span>Delete or leave list</span>
+          <ul>
+            <a type="button" class="btn btn-block btn-danger">Delete/Leave List</a>
+          </ul>
+        </ul>
+      </ul>
+      
+      
+      <div style="height:5%"></div>
+      <ul id="saveSettingsButton">
+        <span><a type="button" class="btn btn-block btn-primary">Save Settings</a></span>
+      </ul>
+      
+      <ul id="exitSettingsButton">
+        <span><a type="button" class="btn btn-block btn-danger">Exit</a></span>
+      </ul> 
+      
+    </div>
+    
+    <!--<h1>{ title }</h1>-->
+    <!--<ul>-->
+    <!--  <li rv-each-item="itemsData">-->
+        <!--<span class="itemID" >{ item.id }</span>-->
+    <!--    <span class="item">{ item.label }</span>-->
+        <!--<span class="value">{ item.value }</span>-->
+    <!--  </li>-->
+    <!--</ul>-->
+    <!--<ul class="edit">-->
+    <!--  <span><a href="#listSettings" type="button" class="btn btn-block btn-danger">EDIT</a></span>-->
+    <!--</ul>-->
+    <!--<p class="more-info" rv-show="moreInfo">{ moreInfo }</p>-->
+    <!--<p class="updated-at" rv-show="updatedAt">{ updatedAt }</p>-->
+    
+    
+    <!-- List settings-->
+    <!--<div id="listSettings" class="modalDialog">-->
+    <!--  <div>-->
+    <!--	  <p>List settings go here</p>-->
+    <!--  	<a href="#close" type="button" class="btn btn-block btn-danger">Close</a>-->
+    <!--  </div>-->
+    <!--</div>-->
+</div>
+

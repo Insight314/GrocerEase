@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+{% load static from staticfiles %}
+{% load dashing_tags %}
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    
+    <!-- Make added CSS smaller -->
+    {% compress css %}
+    <!--Gridster must go first so that the widgets are still functional-->
+    <link rel="stylesheet" href="{% static 'dashing/libs/jquery-gridster/jquery.gridster.css' %}">
+    
+    <!--Bootstrap must go here in order to keep the menu using bootstrap and not the widgets-->
+    <link rel="stylesheet" href="{% static 'css/bootstrap/css/bootstrap.min.css' %}">
+    
+    
+    <!--Dashing stylsheets-->
+    <link rel="stylesheet" href="{% static 'dashing/libs/rickshaw/rickshaw.css' %}">
+    <link rel="stylesheet" href="{% static 'dashing/libs/font-awesome/font-awesome.css' %}">
+    <link rel="stylesheet" href="{% static 'dashing/dashing.css' %}">
+    
+    {% endcompress %}
+    
+    <!--Dashing specified tag for pointing to widget stylesheets -->
+    <!--   I assume it's not compressed as the above stylesheets because they are tiny in comparison -->
+    {% widget_styles %}
+
+    <!--Stylesheet extensions-->
+    {% block stylesheets %}
+    {% endblock %}
+    
+    <!--Dashing specified tag for pointing to widget templates -->
+    {% widget_templates %}
+    
+    <!--Template extensions-->
+    {% block templates %}
+    {% endblock %}
+    
+    <!--External resource extensions-->
+    {% block external_resources %}
+    {% endblock %}
+</head>
+
+<!-- Anything placed within this body tag will be overlayed with dashing menu if enabled-->
+<body id="app" rv-on-keydown="toggleOverlay">
+    
+    <!--Menubar-->
+    {% block menubar %}
+    {% endblock %}
+    
+    <!--Modals-->
+    {% block modals %}
+    {% endblock %}
+    
+
+    <!--Primary container for the dashboard-->
+    {% block main_container %}
+    <div id="container">
+        <div class="gridster fade" rv-each-grid="grids" rv-gridsterify="grid" rv-class-in="grid.active"><ul></ul></div>
+    </div>
+    <div id="overlayContainer">
+        <div class="overlay fade" rv-class-in="showingOverlay" rv-on-click="hideOverlay">
+            <div class="box" rv-each-dashboard="dashboards" rv-on-click="swapDashboard">{ dashboard.name }</div>
+            <div id="actionContainer">
+                <div class="action" id="rollingMenu" rv-if="rollingMenu">
+                    <span rv-on-click="rollingMenu.toggle">Rolling Time</span>
+                    <ul rv-class-in="rollingMenu.showing">
+                        <li rv-on-click="rollingMenu.set" data-time="60" style="transition-delay:0.3s">One minute</li>
+                        <li rv-on-click="rollingMenu.set" data-time="30" style="transition-delay:0.2s">30 seconds</li>
+                        <li rv-on-click="rollingMenu.set" data-time="5" style="transition-delay:0.1s">5 seconds</li>
+                        <li rv-on-click="rollingMenu.set" data-time="0" style="transition-delay:0s">Not rolling</li>
+                    </ul>
+                </div>
+                <div class="action" rv-each-action="actions">
+                    <span rv-on-click="action.func">{ action.name }</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+    
+    <!--Make JS smaller-->
+    {% compress js %}
+    <script type="text/javascript">var DASHING_STATIC = "{% static 'dashing/' %}";</script>
+    <script type="text/javascript" src="{% static 'dashing/libs/jquery-1.11.0.js' %}"></script>
+    <script type="text/javascript" src="{% static 'dashing/libs/sightglass.js' %}"></script>
+    <script type="text/javascript" src="{% static 'dashing/libs/rivets.js' %}"></script>
+    <script type="text/javascript" src="{% static 'dashing/libs/jquery-gridster/jquery.gridster.js' %}"></script>
+    <script type="text/javascript" src="{% static 'dashing/libs/preloadjs/preloadjs-0.6.1.combined.js' %}"></script>
+    <script type="text/javascript" src="{% static 'dashing/libs/moment/moment.js' %}"></script>
+    {% moment_locales %}
+    <script type="text/javascript" src="{% static 'dashing/version.js' %}"></script>
+    <script type="text/javascript" src="{% static 'dashing/dashing.js' %}"></script>
+    <script type="text/javascript" src="{% static 'dashing/dashing.utils.js' %}"></script>
+    
+    
+    
+    <!--<script type="text/javascript">-->
+    <!--    alert("Hello");-->
+        <!--/*To Show There are IDs*/-->
+        <!--// $('.item0').each(function(){-->
+        <!--//     alert("touched");-->
+        <!--// });-->
+    <!--</script>-->
+    
+    
+    {% endcompress %}
+    
+    <!--Dashing specified tag for pointing to widget scripts -->
+    {% widget_scripts %}
+    
+    <!--Script extensions-->
+    {% block scripts %}
+    {% endblock %}
+    
+    <!--Dashing config file extensions-->
+    {% block config_file %}
+        <!--Default-->
+        <script type="text/javascript" src="{% static 'dashing-config.js' %}"></script>
+    {% endblock %}
+</body>
+</html>

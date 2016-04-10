@@ -1,0 +1,85 @@
+/* Color of the list*/
+.widget-livelist>div { 
+    background-color: #777;
+}
+
+/* Color of the list title*/
+.widget-livelist h1 { 
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* This is useful but can be tricky because settings seem to carry over to the larger gridster container*/
+.widget-livelist ol, ul {
+    /* margin values: 1st - top margin between list title and first item 
+                      2nd - side margins between items and list edge */
+    margin: 5px 10px;
+    text-align: left;
+
+
+    
+    /* For IDK */
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/*.widget-livelist div{*/
+/*    height: 90%;*/
+/*    overflow-y:scroll;*/
+/*}*/
+
+
+/* Placement of the bullets */
+.widget-livelist ol {
+    list-style-position: inside;
+}
+
+/* Item container */
+.widget-livelist li {
+    margin-bottom: 5px;
+    background-color: #777;
+}
+
+
+/* No one likes the bullets on a list */
+.widget-livelist .list-nostyle {
+    list-style: none;
+}
+
+/* Color of each item */
+.widget-livelist .itemLabel {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Items value, feature inherited from the lists widget */
+/*.widget-livelist .value {*/
+/*    float: right;*/
+/*    margin-left: 12px;*/
+/*    font-weight: 600;*/
+/*    color: rgba(255, 255, 255, 0.7);*/
+/*}*/
+
+
+/* Edit view input text color*/
+input, input:focus {
+    color: #000;
+}
+
+/* EDIT span */
+.widget-livelist .edit {
+    margin-top:20px;
+}
+
+/* Color of sync status */
+.widget-livelist .updated-at {
+    color: rgba(0, 0, 0, 0.3);
+}
+
+/* Color of the more info block, inherited from lists widget */
+/*.widget-livelist .more-info {*/
+/*    color: rgba(255, 255, 255, 0.7);*/
+/*}*/
+
+/* widgetContainer*/
+/*.widget { */
+/*    height: 50%;*/
+/*}*/
+

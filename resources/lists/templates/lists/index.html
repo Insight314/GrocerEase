@@ -1,0 +1,20 @@
+<!--This page is the recipient of the shit talk, which is contained in the randomText variable accessed as shown below-->
+{% if randomText %}
+    <ul>
+        
+        <!--
+        Example loop through passed object 
+        
+        href points to the URL assigned to the namespace lists and URL pattern named index
+        -->
+        <!--
+        {% for object in latest_object_list %}
+            <li><a href="{% url 'lists:index' list.id }}/">{{ list.list_text }}</a></li>
+        {% endfor %}
+        -->
+    
+        <p>No lists available, but {{ randomText }}</p>
+    </ul>
+{% else %}
+    <p>No lists are available.</p>
+{% endif %}
