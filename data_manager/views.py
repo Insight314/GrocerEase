@@ -189,6 +189,18 @@ def index(request):
 #############
 
 
+
+#Data Sync
+def sync():
+    
+
+
+
+
+
+
+
+
 #------List operations----------------------------------------------------------
 #Function that retrieves a given user's created lists
 #needs user form for receiving and list form for sending?
