@@ -67,7 +67,6 @@ pycrypto==2.6.1
 pydns==2.3.6
 pygpgme==0.3
 pyparsing==2.0.1
-python-apt==0.9.3.5ubuntu1
 python-cinderclient==1.0.8
 python-dateutil==1.5
 python-glanceclient==0.12.0
