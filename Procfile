@@ -1,2 +1,1 @@
-mysql-ctl start
-web: python manage.py runserver $IP:$PORT
+web: gunicorn wsgi
