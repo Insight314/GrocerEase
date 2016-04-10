@@ -29,15 +29,15 @@ def index(request):
     #####################
     # copy paste 4 life
     #####################
-        if request.method == "POST":
+        # if request.method == "POST":
             
-            someRandString = "yo mama so frill" #filler, if statements cannot just be empty or it will BLECKLA in you
+            #someRandString = "yo mama so frill" #filler, if statements cannot just be empty or it will BLECKLA in you
             #this is where you process incoming chris-formation
             #We agreed that this would be in JSON format SO you just need to json.loads(request.body)
             #this handles... INCOMING.. but how does he get to SEE stuff...
             #the answer: STILL POST :D
             
-            DataSent = json.loads(request.body)#fuafuafuafuafuafuafuafuafuafuafuafuafua, fuafua, fuafuafuafua!!!
+            #DataSent = json.loads(request.body)#fuafuafuafuafuafuafuafuafuafuafuafuafua, fuafua, fuafuafuafua!!!
             
             #------------------------------------
             #----For Incoming Chris-Formation----
@@ -46,12 +46,12 @@ def index(request):
             
             #we need to have a little flag in the array input to decide if you are trying to SEND me stuff or ASK for stuff
             
-            if DataSent["direction"] == "IN": #this needs to be implemented in chris-town
-                someRandString = "yo mama so frill" #filler, if statements cannot just be empty or it will BLECKLA in you
+            #if DataSent["direction"] == "IN": #this needs to be implemented in chris-town
+                #someRandString = "yo mama so frill" #filler, if statements cannot just be empty or it will BLECKLA in you
             
             
-            DataSent["data"]
-            request.user.name
+            #DataSent["data"]
+            #request.user.name
             
             
             #DataSent{
@@ -82,8 +82,8 @@ def index(request):
             #------------------------------------
             #----For Outgoing Chris-Formation----
             #------------------------------------
-            if DataSent["direction"] == "OUT":
-                someRandString = "yo mama so frill" #filler, if statements cannot just be empty or it will BLECKLA in you
+            #if DataSent["direction"] == "OUT":
+                #someRandString = "yo mama so frill" #filler, if statements cannot just be empty or it will BLECKLA in you
                 
                 #using a field like "DataSent["user"]" you should be able to construct a packet of entirely user-specific data and..
                 
@@ -136,8 +136,8 @@ def index(request):
                 
                 
                 
-                responseText = "some response array of info" #make sure this is compatable with SWIFT datatypes...
-                return json.dumps(responseText)
+                #responseText = "some response array of info" #make sure this is compatable with SWIFT datatypes...
+                #return json.dumps(responseText)
             
             
             
@@ -145,14 +145,14 @@ def index(request):
             
             
             
-        else:
-        # Just trying to talk shit to another page
-            someRandString = "yo mama so frill"
-            context = {'randomText': someRandString}
-            # return render(request, 'lists/index.html', context)
+        # else:
+        # # Just trying to talk shit to another page
+        #     someRandString = "yo mama so frill"
+        #     context = {'randomText': someRandString}
+        #     # return render(request, 'lists/index.html', context)
             
             
-            return render(request, 'dashing/dashboard.html', context) #junk
+        return render(request, 'dashing/dashboard.html', context) #junk
         
     
     
@@ -191,7 +191,7 @@ def index(request):
 
 
 #Data Sync
-def sync():
+#def sync():
     
 
 
