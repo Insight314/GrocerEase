@@ -170,9 +170,9 @@ function addLiveList(list_id, list_name, num_items, list_items){
     dashboard.addWidget('LiveListWidget' , 'LiveList', {
         row: 2, // TODO - Set these dynamically?
         col: 1,
-        interval: 500, // Interval at which sync function will be called (2 mins)
+        interval: 10000, // Interval at which sync function will be called (2 mins)
                           // TODO - if we implement local storage of lists only, won't need a sync interval
-                          
+        initiallyPopulated: false,                  
         // Configure the widget's unique attributes based upon list details
         //  This calls configureWidget for every LiveListWidget instance
         configureWidget: function() {
@@ -224,6 +224,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
         // TODO - go through this set up the html file accoringly to make few and small 
         // replacements. i.e. dont change text as below, just the id 
         generateHTML: function(id){
+            console.log("Widget " + this.listId + " generatingHTML...");
 
             // If there is a new list and its widget call this function
             if($("#widget").attr("data") == "NOT_CONFIGURED"){
@@ -292,6 +293,8 @@ function addLiveList(list_id, list_name, num_items, list_items){
             console.log("Testfunction was called");
         },
         updateWidget: function(id){
+            console.log("Widget " + this.listId + " updating...");
+
             var self = this;
             if(self.listId == id){
                 var animateLength = 0;
@@ -322,7 +325,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
                         var item = $(this).text();
                         if(modifiedItems.contains(item) === false){
                             modifiedItems.push(item);
-                            console.log(item);
+                            // console.log(item);
                         }
                     });
                     
@@ -405,12 +408,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
 
 // Helpful additions
 
-/**
- * Array.prototype.[method name] allows you to define/overwrite an objects method
- * needle is the item you are searching for
- * this is a special variable that refers to "this" instance of an Array.
- * returns true if needle is in the array, and false otherwise
- */
+// Does array contain element? Returns T/F
 Array.prototype.contains = function ( needle ) {
    for (var i in this) {
        if (this[i] == needle) return true;
@@ -419,7 +417,7 @@ Array.prototype.contains = function ( needle ) {
 }
 
 
-
+// Gives a pretty timestamp, thanks internet
 function getTimestamp(){
     // Create a date object with the current time
     var now = new Date();

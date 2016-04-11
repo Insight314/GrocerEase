@@ -30,6 +30,7 @@ Dashing.widgets.LiveList = function (dashboard) {
     self.row;
     self.col;
     
+    self.initiallyPopulated;
     
     // Return self
     self.getWidget = function () {

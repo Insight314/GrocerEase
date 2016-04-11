@@ -91,9 +91,10 @@ DATABASES = {
 }
 
 
-
-# import dj_database_url
-# DATABASES['default'] =  dj_database_url.config()
+if 'ON_HEROKU' in os.environ:
+    
+    import dj_database_url
+    DATABASES['default'] =  dj_database_url.config()
 
 
 
