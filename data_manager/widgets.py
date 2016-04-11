@@ -17,8 +17,8 @@ class Widget(JSONResponseMixin, View):
     #   Unsure where this gets called from but we could possiblt duplicate for POST
     #   Simply making a copy of this function as post does not work
     def get(self, request, *args, **kwargs):
-        self.process_request(request)
-        context = json.dumps(self.get_context())
+        context = self.process_request(request)
+        # context = json.dumps(self.get_context())
         return HttpResponse(context, content_type="application/json")
         
     def render_to_response(self, context, **response_kwargs):
@@ -31,6 +31,7 @@ class Widget(JSONResponseMixin, View):
     def get_context(self):
         return
 
+# Class that interacts with the dashboard widgets
 class DashboardHelper(Widget):
     username=""
     lists=[]
@@ -56,12 +57,27 @@ class DashboardHelper(Widget):
     # Process and stores attributes found in request
     def process_request(self, request):
 
-        # Extract username from request 
+        # Extract request data 
         try:
-            self.username = str(request.GET.__getitem__('username'))
-            print self.username
+            # Get the processing keyword
+            keyword = str(request.GET.__getitem__('keyword'))
+            
+            # Initial population of the dashboard
+            if keyword == "InitialLoad":
+                # Get username for DB queries
+                self.username = str(request.GET.__getitem__('username'))
+                print self.username
+                return json.dumps(self.initial_load())
+            
+            # Sync request
+            if keyword == "Sync":
+                # Get username for DB queries
+                self.username = str(request.GET.__getitem__('username'))
+                print self.username
+                return json.dumps(self.sync())
+                
         except Exception, e:
-            print "Username was not passed with request"
+            print "Unexpected request: " + e
             
         return
         
@@ -77,7 +93,7 @@ class DashboardHelper(Widget):
     #             'list_items': self.get_list_items(),
     # }
 
-    def get_context(self):
+    def initial_load(self):
         #  Clear structs
         self.lists=[]
         self.list_items = []

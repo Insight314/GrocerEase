@@ -8,7 +8,7 @@
 <div id='widget' class="widgetContainer" data="NOT_CONFIGURED" >
     <!-- Primary widget view, shows list details -->
     <div id="listView">
-      <h1>{ title }</h1>
+      <h1 id="listName">{ title }</h1>
       <ul id="allItemsListView">
         <li id="listItem" rv-each-item="itemsData">
           <!--<span class="itemID" >{ item.id }</span>-->
@@ -33,7 +33,7 @@
     
     <!-- Edit view, similar to list details with different buttons and ability to edit entries -->
     <div id="editView" style="display: none;">
-      <h1>{ title }</h1>
+      <h1 id="listName">{ title }</h1>
       <ul id="allItemsEditView">
         <li id="editItem" rv-each-item="itemsData">
           <div class="input-group">

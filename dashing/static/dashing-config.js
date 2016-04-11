@@ -46,7 +46,7 @@ populateDashboard(username);
 // Gets all data for user and prepares all widgets
 function populateDashboard(username) {
     // Connect to server and request data for user username
-    $.get('widgets/dashboard_helper/', {"username": username}, function(response){
+    $.get('widgets/dashboard_helper/', {"keyword":"InitialLoad", "username": username}, function(response){
         // Process server's response
         processUserData(response);
     }); 
@@ -275,7 +275,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
                 var animateLength = 0;
                 var currentItemsInEditList = self.itemCount;
                 
-                // Listen for button clicks
+                // Listen for button clicks in all views
                 $("#editButton"+id).click(function(){
                     // alert("editButton pressed...")
                     $("#listView"+id).hide();
@@ -286,31 +286,38 @@ function addLiveList(list_id, list_name, num_items, list_items){
                     $("#listView"+id).hide(animateLength);
                     $("#settingsView"+id).show(animateLength);
                 });
-    
+                
+                // ########################
+                // Edit View Main Buttons
+                // ########################
                 $("#saveEditButton"+id).click(function(){
-                    // alert("editButton pressed...")
+                    // Get name of list at time of save
+                    var modifiedName = $("#editView"+id+" #listName").text();
+                    
+                    // Get all items currently in the edit view at time of save
+                    var modifiedItems = new Array();
+                    $("#editView"+id+" #label").each(function(){
+                        var item = $(this).text();
+                        if(modifiedItems.contains(item) === false){
+                            modifiedItems.push(item);
+                            console.log(item);
+                        }
+                    });
+                    
+                    // console.log(modifiedName);
+                    
+                    // View update
                     $("#editView"+id).hide();
                     $("#listView"+id).show();
                 });
+                
                 $("#cancelEditButton"+id).click(function(){
                     // alert("settingsButton pressed...")
                     $("#editView"+id).hide();
                     $("#listView"+id).show();
                 });
                 
-                $("#saveSettingsButton"+id).click(function(){
-                    // alert("editButton pressed...")
-                    $("#settingsView"+id).hide(animateLength);
-                    $("#listView"+id).show(animateLength);
-                });
-                $("#exitSettingsButton"+id).click(function(){
-                    // alert("settingsButton pressed...")
-                    $("#settingsView"+id).hide(animateLength);
-                    $("#listView"+id).show(animateLength);
-                });
-                
-                
-                // Edit View Listener
+                // Edit View Listeners
                 // Item is clicked in edit view, transform to text entry, don't increment itemsModifed until change accepted
                 $("#editView"+id+" #label").click(function(){
                     if (!self.isEditingItem){
@@ -320,6 +327,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
                         self.isEditingItem = true;
                     }
                 });
+                
                 // Item modification is accepted, increment itemsModified
                 $("#editView"+id+" #acceptItemChangeButton").click(function(){
                     var itemContainerToBeReplaced = $(this).parent().parent();
@@ -327,8 +335,8 @@ function addLiveList(list_id, list_name, num_items, list_items){
                     itemContainerToBeReplaced.replaceWith("<div class='input-group'><span id='label'>" + newItem  + "</span><span class='input-group-btn'><a id='removeItem' class='btn btn-secondary btn-danger' role='button'>Remove</a></span></div>");
                     self.isEditingItem=false;
                 });
+                
                 // New Item, increment itemsAdded
-                // TODO - This function only adds the item to the edit list, the saveEditButton should update the server and widget attributes
                 $("#addNewItemButton"+id).click(function(){
                     var newItemContainer = $("#editView"+id+" #hiddenItem"+id+"-"+self.itemsAdded);
                     if (newItemContainer && !self.isEditingItem){
@@ -339,6 +347,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
                         newItemContainer.replaceWith("<li id='editItem"+newEditItemId+"'><div class='input-group'><span><input id='newItemLabel' type='text' placeholder='New item' value=''></input></span><span class='input-group-btn'><a id='acceptItemChangeButton' class='btn btn-secondary btn-success' role='button'>OK</a></span></div></li><li id='hiddenItem"+id+"-"+self.itemsAdded+"'><div class='input-group' type='hidden'></div></li>");
                     }
                 });
+                
                 // Removing item
                 $("#editView"+id+" #removeItem").click(function(){
                     // Get the item id from the editItem id
@@ -348,26 +357,24 @@ function addLiveList(list_id, list_name, num_items, list_items){
                     // If we don't already have this index
                     if(itemToRemoveId && !self.deletedItemIndexes.contains(itemToRemoveId)){
                         self.deletedItemIndexes.push(itemToRemoveId);
-                        itemElementToRemove.hide();
-                        
-                        
-                        // TODO - Fucking friday night's point of submission.
-                        // I can remove the item from the edit menu but i need to process the changes on save changes button
-                        // and send them to the server I might skip the send to server part and just update the listView 
-                        // anyway. Needs to look good for demo. Still need to tackle adding a list, should be easy with all
-                        // this example code above.
-
-                        
-                        // alert("Removing" + itemToRemoveId);
+                        //itemElementToRemove.hide();
+                        itemElementToRemove.remove();
                     }
-                    //self.itemsDeleted++ ;
-                   // var itemContainerToBeRemoved = $(this).parent().parent();
-                    //itemContainerToBeRemoved.replaceWith("");
                 });
-                // Saving changes
                 
-                // Cancel, decrement all change variables to zero
-                
+                // ############################
+                // Settings View Main Buttons
+                // ############################
+                $("#saveSettingsButton"+id).click(function(){
+                    // alert("editButton pressed...")
+                    $("#settingsView"+id).hide(animateLength);
+                    $("#listView"+id).show(animateLength);
+                });
+                $("#exitSettingsButton"+id).click(function(){
+                    // alert("settingsButton pressed...")
+                    $("#settingsView"+id).hide(animateLength);
+                    $("#listView"+id).show(animateLength);
+                });
             }
         }
     }); // end addWidget
