@@ -49,14 +49,13 @@
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Items value, feature inherited from the lists widget */
-/*.widget-livelist .value {*/
-/*    float: right;*/
-/*    margin-left: 12px;*/
-/*    font-weight: 600;*/
-/*    color: rgba(255, 255, 255, 0.7);*/
-/*}*/
-
+ /* Items quantity */
+.widget-livelist .quantity {
+    float: right;
+    margin-left: 12px;
+    /*font-weight: 600;*/
+    /*color: rgba(255, 255, 255, 0.7);*/
+}
 
 /* Edit view input text color*/
 input, input:focus {

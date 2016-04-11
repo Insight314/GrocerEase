@@ -23,7 +23,7 @@ from django.contrib.auth.models import User
 class tags(models.Model):
     tag_id = models.AutoField(primary_key = True)
     tag_name = models.CharField(max_length = 32)
-    tag_details = models.TextField(max_length = 128)
+    tag_details = models.TextField(max_length = 128) #TODO: Take out
     tag_creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'tag_creator')
     
     def __str__(self):              # __unicode__ on Python 2

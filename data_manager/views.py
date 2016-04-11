@@ -314,6 +314,10 @@ def leave_list(leaving_user, name_of_list):
 #             return premade_lists
             
 
+#------User Operations----------------------------------------------------------
+#function that adds a user to a certain list
+
+
 #------Item operations----------------------------------------------------------
 
 #function that retrieves a single list's items      
