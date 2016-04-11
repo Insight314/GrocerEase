@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'grocerease.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'grocerease_db',
         'USER': 'tjlwhitaker',
         'PASSWORD': '', 
