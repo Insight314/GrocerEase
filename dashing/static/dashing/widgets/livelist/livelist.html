@@ -13,7 +13,8 @@
         <li id="listItem" rv-each-item="itemsData">
           <!--<span class="itemID" >{ item.id }</span>-->
           <span class="item">{ item.label }</span>
-          <!--<span class="value">{ item.value }</span>-->
+          <span class="quantity" style="align: right">{ item.quantity }</span>
+          <span class="checkedStatus">{ item.checkedStatus }</span>
         </li>
       </ul>
       
@@ -38,6 +39,9 @@
         <li id="editItem" rv-each-item="itemsData">
           <div class="input-group">
             <span id='label'>{ item.label }</span>
+            <span class="input-group-btn">
+              <a id='itemDetails' class="btn btn-secondary btn-primary" role="button">Details</a>
+            </span>
             <span class="input-group-btn">
               <a id='removeItem' class="btn btn-secondary btn-danger" role="button">Remove</a>
             </span>

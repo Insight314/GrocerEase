@@ -102,6 +102,7 @@ class DashboardHelper(Widget):
         self.list_items_quantity=[]
         self.list_items_details=[]
         self.list_items_checkedStatus=[]
+        
         # Get all user's lists
         self.lists = self.getAllUsersLists(self.username)
         if self.lists:
@@ -112,7 +113,14 @@ class DashboardHelper(Widget):
                 self.list_ids += [str(list.list_id)]
                 self.list_names += [str(list.list_name)]
                 self.list_items += [str(".")] # Used as delimiter
+                self.list_items_quantity += [str(".")]
+                self.list_items_details += [str(".")]
+                self.list_items_checkedStatus += [str(".")]
+                
                 self.list_items += [str(list.list_id)] # list id is added to items list for identification
+                self.list_items_quantity += [str(list.list_id)]
+                self.list_items_details += [str(list.list_id)]
+                self.list_items_checkedStatus += [str(list.list_id)]
                 
                 print ("Getting list " +  str(list.list_id) + " for user " + self.username)
                 

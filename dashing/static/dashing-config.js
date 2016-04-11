@@ -60,6 +60,9 @@ function processUserData(response){
         var list_ids = response['list_ids'];
         var list_names = response['list_names'];
         var list_items = response['list_items'];
+        var list_items_quantity = response['list_items_quantity'];
+        var list_items_details = response['list_items_details'];
+        var list_items_checkedStatus = response['list_items_checkedStatus'];
         // alert("List ID's: " + response['list_ids'] + "\nList names: " + response['list_names'] + "\nList items: " + response['list_items']);
 
         
@@ -75,12 +78,18 @@ function processUserData(response){
             var itemsAdded = 0;
             var collectingItems = false;
             var foundCorrectList = false;
-            var current_list = new Array();
+            var current_list_items = new Array();
+            var current_list_items_quantity = new Array();
+            var current_list_items_details = new Array();
+            var current_list_items_checkedStatus = new Array();
             
-            // List_items is a delimited list 
+            
+            // All details are given as delimited lists 
             for(var itemIndex = 0; itemIndex < list_items.length; itemIndex++){    
                 var item = list_items[itemIndex];
-                // alert("Item: " + item);
+                var item_quantity = list_items_quantity[itemIndex];
+                var item_details = list_items_details[itemIndex];
+                var item_checkedStatus = list_items_checkedStatus[itemIndex];
                 
                 // Handles the items
                 if(foundCorrectList === true){
@@ -93,12 +102,17 @@ function processUserData(response){
                     }
                     // Keep reading in items
                     else{
-                        current_list.push(item);
+                        current_list_items.push(item);
+                        current_list_items_quantity.push(item_quantity);
+                        current_list_items_details.push(item_details);
+                        current_list_items_checkedStatus.push(item_checkedStatus);
+                        
                         // Keep item count for this list
                         itemsAdded++
                         // alert("Found item");
                     }
                 }
+                
                 
                 // Handles list ids
                 if(collectingItems === true){
@@ -117,10 +131,17 @@ function processUserData(response){
                 }
             }
 
+
             // Package list information for widget
             var itemsFormatted = new Array();
-            for(var itemFormattingIndex = 0; itemFormattingIndex < current_list.length; itemFormattingIndex++){
-                var itemFormatted = {label: current_list[itemFormattingIndex], value: ''};
+
+            for(var itemFormattingIndex = 0; itemFormattingIndex < current_list_items.length; itemFormattingIndex++){
+                var itemFormatted = {label: current_list_items[itemFormattingIndex], 
+                                     quantity: current_list_items_quantity[itemFormattingIndex],
+                                     details: current_list_items_details[itemFormattingIndex],
+                                     checkedStatus: current_list_items_checkedStatus[itemFormattingIndex]
+                };
+                
                 itemsFormatted.push(itemFormatted);
             }
             
@@ -201,8 +222,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
         // TODO - go through this set up the html file accoringly to make few and small 
         // replacements. i.e. dont change text as below, just the id 
         generateHTML: function(id){
-            // if(id == numDashboardWidgets){
-            
+
             // If there is a new list and its widget call this function
             if($("#widget").attr("data") == "NOT_CONFIGURED"){
                 if(configuredWidgetIDs.contains(id) === false){
@@ -332,7 +352,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
                 $("#editView"+id+" #acceptItemChangeButton").click(function(){
                     var itemContainerToBeReplaced = $(this).parent().parent();
                     var newItem = itemContainerToBeReplaced.find('#newItemLabel').val();
-                    itemContainerToBeReplaced.replaceWith("<div class='input-group'><span id='label'>" + newItem  + "</span><span class='input-group-btn'><a id='removeItem' class='btn btn-secondary btn-danger' role='button'>Remove</a></span></div>");
+                    itemContainerToBeReplaced.replaceWith("<div class='input-group'><span id='label'>" + newItem  + "</span><span class='input-group-btn'><a id='itemDetails' class='btn btn-secondary btn-primary' role='button'>Details</a></span><span class='input-group-btn'><a id='removeItem' class='btn btn-secondary btn-danger' role='button'>Remove</a></span></div>");
                     self.isEditingItem=false;
                 });
                 
