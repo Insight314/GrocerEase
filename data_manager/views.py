@@ -257,9 +257,7 @@ def edit_list(username, e_list_info = []):
     curr_items = get_list_items(list_to_change)
     
     #update tags
-    # for element in tags_list:
-    #     if 
-            
+    
             
         
     
@@ -354,21 +352,21 @@ def get_user_tags(user_name):
      return users_tags
      
 #add a tag to a list, vice versa
-def add_tag(l_id, creator, t = []):
+def add_tag(l_id, creator, t):
     t_creator = User.objects.get(username = creator)
     
     #if the tag is already a thing, simply associate it with the list
-    if tags.objects.filter(tag_name = t[0]).exists() == True:
-        tmp_t = tags.objects.get(tag_name = t[0])
+    if tags.objects.filter(tag_name = t).exists() == True:
+        tmp_t = tags.objects.get(tag_name = t)
         tmp_l = lists.objects.get(list_id = l_id)
         tmp_l.list_tags = tmp_t
         tmp_l.save()
     else:
         #create the tag and then associate it with the list
-        new_tag = tags(tag_name = t[0], tag_details = t[1], tag_creator = t_creator.id)
+        new_tag = tags(tag_name = t, tag_details = '', tag_creator = t_creator.id)
         new_tag.save()
         tmp_l = lists.objects.get(list_id = l_id)
-        fresh_tag = tags.objects.get(tag_name = t[0])
+        fresh_tag = tags.objects.get(tag_name = t)
         tmp_l.list_tags = fresh_tag
         tmp_l.save()
         
