@@ -124,13 +124,16 @@ class DashboardHelper(Widget):
                         self.list_items += [str(item.item_name)]
                         self.list_items_quantity += [str(item.item_quantity)]
                         self.list_items_details += [str(item.item_details)]
-                        self.list_items_checkedStatus=[str(item.item_checked_status)]
+                        self.list_items_checkedStatus += [str(item.checked_status)]
                 else:
                     return
             return {
                 'list_ids': self.list_ids,
                 'list_names': self.list_names,
                 'list_items': self.list_items,
+                'list_items_quantity': self.list_items_quantity,
+                'list_items_details': self.list_items_details,
+                'list_items_checkedStatus': self.list_items_checkedStatus,
             }
         
         else:

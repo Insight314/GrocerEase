@@ -269,11 +269,11 @@ def edit_list(username, e_list_info = []):
 #settings
     #update tags
     for i in tags_list:
-        add_tag(e_list_id,list_to_change.list_creator,tags_list[i])
+        add_tag(e_list_id,list_to_change.list_creator,i)
         
     #update users
-    for i in list_users:
-        #add users functions
+   # for i in list_users:
+        
             
         
     
