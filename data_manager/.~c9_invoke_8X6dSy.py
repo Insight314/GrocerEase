@@ -124,7 +124,7 @@ class DashboardHelper(Widget):
                     for item in self.getAllListItems(self.username, x):
                         self.list_items += [str(item.item_name)]
                         self.list_items_quantity=[str(item_quantity)]
-                        self.list_items_details=[]
+                        self.list_items_details=[str(item.ite)]
                         self.list_items_checkedStatus=[]
                 else:
                     return

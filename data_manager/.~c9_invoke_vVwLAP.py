@@ -64,7 +64,7 @@ class DashboardHelper(Widget):
             
             # Initial population of the dashboard
             if keyword == "InitialLoad":
-                # Get username for DB queries
+                
                 self.username = str(request.GET.__getitem__('username'))
                 print self.username
                 return json.dumps(self.initial_load())
@@ -96,13 +96,10 @@ class DashboardHelper(Widget):
     def initial_load(self):
         #  Clear structs
         self.lists=[]
-        self.list_items=[]
+        self.list_items = []
         self.list_ids=[]
         self.list_names=[]
-        self.list_items.quatity=[]
-        self.list_items_details=[]
-        self.list_items_checkedStatus=[]
-        
+        s
         # Get all user's lists
         self.lists = self.getAllUsersLists(self.username)
         if self.lists:
@@ -123,9 +120,6 @@ class DashboardHelper(Widget):
                     # Add each item to the list
                     for item in self.getAllListItems(self.username, x):
                         self.list_items += [str(item.item_name)]
-                        self.list_items_quantity=[str(item_quantity)]
-                        self.list_items_details=[]
-                        self.list_items_checkedStatus=[]
                 else:
                     return
             return {

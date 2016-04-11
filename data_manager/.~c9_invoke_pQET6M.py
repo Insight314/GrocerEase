@@ -93,7 +93,7 @@ class DashboardHelper(Widget):
     #             'list_items': self.get_list_items(),
     # }
 
-    def initial_load(self):
+    def get_conte(self):
         #  Clear structs
         self.lists=[]
         self.list_items=[]

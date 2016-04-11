@@ -256,8 +256,24 @@ def edit_list(username, e_list_info = []):
     curr_users = list_to_change.list_users.all()
     curr_items = get_list_items(list_to_change)
     
-    #update tags
+#modifiers
+    #list title
+    if list_to_change.list_name != e_list_name:
+        list_to_change.update(list_name = e_list_name)
+        list_to_change.save()
     
+    #items
+    #TODO: Figure out how the fuck this works
+    
+    
+#settings
+    #update tags
+    for i in tags_list:
+        add_tag(e_list_id,list_to_change.list_creator,tags_list[i])
+        
+    #update users
+    for i in list_users:
+        #add users functions
             
         
     
