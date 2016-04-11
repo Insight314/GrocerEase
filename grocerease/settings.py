@@ -79,16 +79,16 @@ WSGI_APPLICATION = 'grocerease.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'grocerease_db',
-#         'USER': 'tjlwhitaker',
-#         'PASSWORD': '', 
-#         'HOST': '127.0.0.1' ,
-#         'PORT': '3306' ,
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'grocerease_db',
+        'USER': 'tjlwhitaker',
+        'PASSWORD': '', 
+        'HOST': '127.0.0.1' ,
+        'PORT': '3306' ,
+    }
+}
 
 
 
