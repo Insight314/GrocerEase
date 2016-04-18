@@ -7,6 +7,7 @@ urlpatterns = [
     
     # example: /data_manager/
     url(r'^$', views.index, name='index'),
+    url(r'^gen/$', views.gen, name='gen'),
     
     
     

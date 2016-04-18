@@ -3,9 +3,7 @@
 Dashing.widgets.LiveList = function (dashboard) {
     var self = this;
     self.__init__ = Dashing.utils.widgetInit(dashboard, 'livelist');
-    self.interval; // 10s refresh rate (Default is 1s)
-                          // Applies only to the syncing function as defined in 
-                          //    dashing.js addWidget() method
+    self.interval;
     
 
     self.scope = {}; // Holds the attributes to be given to html
@@ -24,6 +22,10 @@ Dashing.widgets.LiveList = function (dashboard) {
     self.itemsDeleted;
     self.itemsModifed;
     self.isEditingItem;
+    self.editSaved;
+    self.isEditingList;
+    
+    self.isEditingSettings;
     
     self.deletedItemIndexes;
     
@@ -31,6 +33,8 @@ Dashing.widgets.LiveList = function (dashboard) {
     self.col;
     
     self.initiallyPopulated;
+    self.updateIntervalSet;
+    self.upToDate;
     
     // Return self
     self.getWidget = function () {

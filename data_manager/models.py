@@ -2,7 +2,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 #Author: Abel Trespalacios
 #Date Created: 2/1/16
 #ORM of grocerease_db
@@ -25,6 +25,7 @@ class tags(models.Model):
     tag_name = models.CharField(max_length = 32)
     tag_details = models.TextField(max_length = 128) #TODO: Take out
     tag_creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'tag_creator')
+    updated_on = models.DateTimeField(default = timezone.now)
     
     def __str__(self):              # __unicode__ on Python 2
         return self.tag_name
@@ -58,7 +59,8 @@ class lists(models.Model):
     list_users = models.ManyToManyField(User, related_name = 'users_lists')
     list_creator = models.ForeignKey(User,on_delete=models.CASCADE, related_name = 'list_creator')
     is_premade = models.BooleanField(default = 0)
-    
+    updated_on = models.DateTimeField(default = timezone.now)
+     
     def __str__(self):              # __unicode__ on Python 2
         return self.list_name
 
@@ -78,6 +80,7 @@ class addresses(models.Model):
     city_name = models.CharField(max_length = 30)
     state_code = models.CharField(max_length = 2)
     zip_code = models.CharField(max_length = 5)
+    updated_on = models.DateTimeField(default = timezone.now)
     
     def __str__(self):              # __unicode__ on Python 2
         return self.address_id
@@ -108,6 +111,7 @@ class stores(models.Model):
     store_address = models.ManyToManyField(addresses, related_name = 'stores_addresses')
     store_details = models.TextField(max_length = 256)
     store_number = models.CharField(max_length = 15)
+    updated_on = models.DateTimeField(default = timezone.now)
     
     def __str__(self):              # __unicode__ on Python 2
         return self.store_name
@@ -145,6 +149,7 @@ class products(models.Model):
     product_availability = models.BooleanField(default = 1)
     product_details = models.TextField(max_length = 256)
     store = models.ManyToManyField(stores, related_name = 'stores_products')
+    updated_on = models.DateTimeField(default = timezone.now)
     
     def __str__(self):              # __unicode__ on Python 2
         return self.product_name
@@ -179,8 +184,9 @@ class items(models.Model):
     item_id = models.AutoField(primary_key = True)
     item_name = models.CharField(max_length = 128)
     checked_status = models.BooleanField(default = 0)
-    item_details = models.TextField(max_length = 256)
-    item_quantity = models.CharField(max_length = 128)
+    item_details = models.TextField(max_length = 256, null=True)
+    item_quantity = models.CharField(max_length = 128,null=True)
+    updated_on = models.DateTimeField(default = timezone.now)
     
     def __str__(self):              # __unicode__ on Python 2
         return self.item_name

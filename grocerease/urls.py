@@ -29,6 +29,7 @@ from data_manager.widgets import DashboardHelper # LiveListWidget
     # This is how to generate urls for widgets defined in dashing widgets
     # from dashing.widgets import LiveListWidget
 
+admin.autodiscover() #omg wtf forgot this line that is why some names didn't route
 # Generates the url from root dashboard (/) currently
 # router.register(LiveListWidget, 'live_list_widget')   # /widgets/live_list_widget, base list widget
 router.register(DashboardHelper, 'dashboard_helper')  # /widgets/dashboard_helper, widget utilities used by dashing config
@@ -39,5 +40,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^accounts/', include('registration.backends.simple.urls')),
     url(r'^', include(router.urls)),
-    url(r'^data_manager/', include('data_manager.urls')),
+    url(r'^data_manager/', include('data_manager.urls', namespace='data')),
 ]

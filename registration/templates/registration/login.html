@@ -1,13 +1,9 @@
 {% extends "registration/registration_base.html" %}
-{% load static from staticfiles %}
+
 
 {% load i18n %}
 
-{% block stylesheets %}
-<link rel="stylesheet" href="{% static 'css/signin.css' %}">
-{% endblock %}
-
-{% block title %}{% trans "" %}<title>Log In | GrocerEase</title>{% endblock %}
+{% block pagename %}{% trans "Log In" %}{% endblock %}
 
 {% block content %}
 <div class="login-page">
@@ -22,9 +18,9 @@
 </div>
 <!-- Broke the line below to avoid reset password zone....-->
 <!--<p>{/% trans "Forgot your password, huh?" %} <a href="{/% url 'auth_password_reset' %}">{/% trans "Reset it" %}</a>.</p>-->
-<p>{% trans "Not a member?" %} <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>.</p>
+<p class ="other-text">{% trans "Not a member?" %} <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>.</p>
 {% endblock %}
-
+{% block homelink %}{% endblock %}
 
 {% comment %}
 **registration/login.html**

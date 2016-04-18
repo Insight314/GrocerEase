@@ -20,7 +20,7 @@
                     };
                     this.load = function() {
                         var self = this,
-                            googleMapsScript = document.createElement('script');
+                        googleMapsScript = document.createElement('script');
                         googleMapsScript.type = 'text/javascript';
                         googleMapsScript.src = 'https://maps.googleapis.com/maps/api/js' +
                                                '?v=3.exp&callback=__googlemapscallbackfunc__';
@@ -225,16 +225,25 @@
             self.subscribe(name + '/configureWidget', widget.configureWidget.bind(widget));
             self.publish(name + '/configureWidget');
             self.subscribe(name + '/sync', widget.sync.bind(widget));
-            self.publish(name + '/sync');
+            // self.publish(name + '/sync');
             self.subscribe(name + '/updateWidget', widget.updateWidget.bind(widget));
             self.publish(name + '/updateWidget');
+            self.subscribe(name + '/generateHTML', widget.generateHTML.bind(widget));
 
             widget.interval = Number(widget.interval);
             if (isNaN(widget.interval) || widget.interval === 0) return;
             
+            // console.log(name);
+            setInterval(self.publish.bind(null, name + '/generateHTML'), 500);
+
+            // setInterval(self.publish.bind(null, name + '/sync'), 30000);
             
-            setInterval(self.publish.bind(null, name + '/sync'),
-                        widget.interval || 1000);
+            var updateInterval = setInterval(self.publish.bind(null, name + '/updateWidget'), 1000);
+            // setTimeout(function(){
+            //     clearTimeout(updateInterval);
+            // }, 10000);
+
+                        
 
         };
         this.getWidgets = function() {

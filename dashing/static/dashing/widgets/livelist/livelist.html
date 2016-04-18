@@ -11,8 +11,8 @@
       <h1 id="listName">{ title }</h1>
       <ul id="allItemsListView">
         <li id="listItem" rv-each-item="itemsData">
-          <!--<span class="itemID" >{ item.id }</span>-->
-          <!--<span class="checkedStatus">{ item.checkedStatus }</span>-->
+          <span class="itemID" style="display:none">{ item.id }</span>
+          <!--<span class="checkedStatus" style="display:none">{ item.checkedStatus }</span>-->
           <span class="item">{ item.label }</span>
           <span class="quantity">{ item.quantity }</span>
         </li>
@@ -38,6 +38,7 @@
       <ul id="allItemsEditView">
         <li id="editItem" rv-each-item="itemsData">
           <div class="input-group">
+            <span class="itemID" style="display:none">{ item.id }</span>
             <span id='label'>{ item.label }</span>
             <span class="input-group-btn">
               <a id='itemDetails' class="btn btn-secondary btn-primary" role="button">Details</a>

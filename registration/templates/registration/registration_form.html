@@ -1,14 +1,9 @@
 {% extends "registration/registration_base.html" %}
-{% load static from staticfiles %}
 {% load i18n %}
 
-{% block stylesheets %}
-<link rel="stylesheet" href="{% static 'css/signin.css' %}">
-{% endblock %}
 
 
-
-{% block title %}{% trans "" %}<title>Register | GrocerEase</title>{% endblock %}
+{% block pagename %}{% trans "Registration" %}{% endblock %}
 
 {% block content %}
 <div class="login-page">
@@ -20,10 +15,10 @@
         </form>
     </div>
 </div>
-<p>{% trans "Already a member?" %} <a href="{% url 'auth_login' %}">{% trans "Log in" %}</a>.</p>
+<p class ="other-text">{% trans "Already a member?" %} <a href="{% url 'auth_login' %}">{% trans "Log in" %}</a>.</p>
 
 {% endblock %}
-
+{% block homelink %} {% endblock %}
 
 {% comment %}
 **registration/registration_form.html**

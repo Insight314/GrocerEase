@@ -8,18 +8,20 @@
     <link rel="stylesheet" href="{% static 'css/custom/modals.css' %}">
 {% endblock %}
 
+
+
 <!-- Top navigational bar -->
 {% block menubar %}
     <nav id="MenuBar" class="navbar navbar-inverse">
           <ul class="nav navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="#openDashboardFilters">Dashboard</a></li>
+                <a class="nav-link" href="#openDashboardFilters">{{user.username}}'s Dashboard</a></li>
             <li class="nav-item">
                 <a class="nav-link" href="#openSettings">Settings</a></li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'auth_logout' %}">Logout</a></li>
-            <li class="nav-item">
                 <a class="nav-link" href="#addNewList">Add List</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'auth_logout' %}">Logout</a></li>
             <li class="nav-title">
                 <a>GrocerEase</a></li>
           </ul>
