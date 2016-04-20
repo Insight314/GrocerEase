@@ -10,7 +10,7 @@
 
     <title>{% block title %}Dashboard{% endblock %}</title>
     
-    <script type="text/javascript">var username = "{{ user.username }}";//here's the fucking magic</script>
+    <script type="text/javascript">var username = "{{ user.username }}"; var userid = "{{ user.id }}";//here's the fucking magic</script>
     <!-- Make added CSS smaller -->
     {% compress css %}
     <!--Gridster must go first so that the widgets are still functional-->

@@ -50,13 +50,18 @@
 <!-- Broke the line below to avoid reset password zone....-->
 <!--<p>{/% trans "Forgot your password, huh?" %} <a href="{/% url 'auth_password_reset' %}">{/% trans "Reset it" %}</a>.</p>-->
 <p class ="other-text">{% trans "Various debug info and fun buttons: " %}</p>
-<p class ="other-text">{% trans "Logged in as: " %} {% if user.is_authenticated %}{{ user.username }}{% else %}Null{% endif %}</p>
+<p class ="other-text">{% trans "Logged in as: " %} {% if user.is_authenticated %}{{ user.username }} , ID: {{ user.id }}{% else %}Null{% endif %}</p>
 <form action="{% url 'data:gen' %}" method = "post" enctype = "multipart/form-data"><p class ="other-text">{% trans "There are currently" %} {{ productCount }} {% trans "products." %} 
-            {% csrf_token %}<input style="width:30%;" class="btn btn-default btn-md" type="submit" name="purge_products" value="Purge These?" /></form></p>
+            {% csrf_token %}<input style="width:30%;" class="btn btn-default btn-md" type="submit" name="purge_products" value="Purge These?" /></form></p><br>
+            <p class ="other-text">{% trans "There are currently" %} {{listCount}} {% trans "lists." %}</p>
+            <p class ="other-text">>>>{% trans "You currently own" %} {{mylists}} {% trans "of these." %}</p><br>
+            <p class ="other-text">{% trans "There are currently" %} {{itemCount}} {% trans "items." %}</p>
+            
+            
 
 <p class ="other-text">{% trans "Ready to leave?" %} <a href="{% url 'dashboard' %}">{% trans "Return Home" %}</a>.</p>
 <br><br>
-{{message}} 
+<font color ="red">{{message}}</font> 
 {% endblock %}
 
     </div> <!-- /container -->

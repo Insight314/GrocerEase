@@ -1,4 +1,4 @@
-/* global $, Dashboard */
+/* global $, username, userid, Dashboard */
 
 // This is the dashing config file that is used to configure the dashboard 
 //  original dashing config file is backed up
@@ -18,43 +18,48 @@ var dashboard = new Dashboard();
 var numDashboardWidgets = 0;
 // var list_names = new Array();
 
-//var username = document.getElementById("username").value; //fucking magic-- this happens elsewhere....
-/* global username*/
-populateDashboard(username);
+// Username is set from the request to dashing/base.html
+populateDashboard(username, userid);
 
 
 // Initial population of dashboard
 // Gets all data for user and prepares all widgets
-function populateDashboard(username) {
+function populateDashboard(username, userid) {
     // Connect to server and request data for user username
-    $.get('widgets/dashboard_helper/', {"keyword":"InitialLoad", "username": username}, function(response){
+    $.get('widgets/dashboard_helper/', {"keyword":"InitialLoad", "username": username, "userid": userid}, function(response){
         // Process server's response
-        processResponse(response);
+        processResponse(null, response);
     }); 
+    
+    // Add an empty widget for the add new list "button"
+    // addLiveList(-1, "New List", 0, "", true);
 }
 
 
 // Processes server responses
-function processResponse(response){
+function processResponse(widget, response){
     if(response != null){
-        var keyword = response['keyword']
-        
+        var keyword = response['keyword'];
+        console.log("Request received");
         if(keyword == "InitialLoad" || keyword == "ListDetailsEdit"){
             
             var list_ids = response['list_ids'];
             var list_names = response['list_names'];
-            var list_items_ids = response['list_items_ids']
-            var list_items = response['list_items'];
+            var list_items_ids = response['list_items_ids'];
+            var list_items = response['list_items']; //can these really be pulled as-is by accessing like a dict object?
             var list_items_quantity = response['list_items_quantity'];
             var list_items_details = response['list_items_details'];
             var list_items_checkedStatus = response['list_items_checkedStatus'];
             
             // Process list data
+            console.log(list_ids.length);
             for(var listIndex = 0; listIndex < list_ids.length; listIndex++){
                 var itemsFormatted = new Array();
                 //Get list id
+                console.log(list_ids[listIndex]);
                 var current_list_id = list_ids[listIndex];
                 // Get list name
+                console.log(list_names[listIndex]);
                 var current_list_name = list_names[listIndex];
                 
                 // Get list items  
@@ -85,29 +90,31 @@ function processResponse(response){
                         }
                         // Keep reading in items
                         else{
+                            console.log(item);
                             current_list_items_ids.push(item_id);
                             current_list_items.push(item);
                             current_list_items_quantity.push(item_quantity);
                             current_list_items_details.push(item_details);
                             current_list_items_checkedStatus.push(item_checkedStatus);
                             // Keep item count for this list
-                            itemsAdded++
+                            itemsAdded++;
                         }
                     }
                     
                     // Handles list ids
                     if(collectingItems === true){
                         // If its the one we want, set boolean and next items are items
-                        if(item === current_list_id){
+                        if(item == current_list_id){
                             foundCorrectList = true;
                         }
                         // Else, we simply skip the items
                     }
-                    
-                    // Handles delimiter, go to next pos for list_id
-                    if(item === "."){
-                        collectingItems = true;
-                        // alert("Found delimiter");
+                    else{
+                        // Handles delimiter, go to next pos for list_id
+                        if(item === "."){
+                            collectingItems = true;
+                            // alert("Found delimiter");
+                        }
                     }
                 }
     
@@ -126,24 +133,27 @@ function processResponse(response){
                 // Initial widget loading
                 if(keyword == "InitialLoad"){
                     // Add new list widget
-                    addLiveList(current_list_id, current_list_name, itemsAdded, itemsFormatted);
+                    addLiveList(current_list_id, current_list_name, itemsAdded, itemsFormatted, false);
                     numDashboardWidgets++;
+                }
+                
+                // List edit
+                if(keyword == "ListDetailsEdit"){
+                    // Get ack
+                    var ack = response['Ack'];
+                    if(ack == "Success"){
+                        console.log(ack);
+                        widget.list_id = current_list_id;
+                        return [current_list_name, getTimestamp(), itemsFormatted];
+                    }
+                    else{
+                        console.log("Server could not process response");
+                        return
+                    }
                 }
             }
             
-            // List edit
-            if(keyword == "ListDetailsEdit"){
-                // Get ack
-                var ack = response['Ack'];
-                if(ack == "Success"){
-                    console.log(ack);
-                    return itemsFormatted;
-                }
-                else{
-                    console.log("Server could not process response");
-                    return
-                }
-            }
+            
         }
         
         // Settings response processing
@@ -157,19 +167,34 @@ function processResponse(response){
         }
         
         // Add list response processing
-        if(keyword == "AddList"){
-            
+        if(keyword == "AddListRequest"){
+            // Get ack
+            var ack = response['Ack'];
+            if(ack == "Success"){
+                console.log("Add list server ack: " + ack);
+                // widget.list_id = current_list_id;
+                
+                
+                
+                // This is where i left off, i need to send the data expected by the add list fnctionality
+                return [current_list_name, getTimestamp(), itemsFormatted];
+            }
+            else{
+                console.log("Server could not process response");
+                return
+            }//it was actually this bracket KevinChanged
         }
     }
     else{
-        console.log("Dashboard was unsuccessful in accessing " + username + "'s information.");
+        // alert("Welcome to your dashboard. Add a list to get started!");
+        console.log("New user or database was unsuccessful in accessing " + username + "'s information.");
     }
 }
 
 
 
 // Adds a LiveList Widget instance to the dashboard
-function addLiveList(list_id, list_name, num_items, list_items){
+function addLiveList(list_id, list_name, num_items, list_items, isPseudoAddList){
     dashboard.addWidget('LiveListWidget' , 'LiveList', {
         row: 2, // TODO - Set these dynamically?
         col: 1,
@@ -178,15 +203,19 @@ function addLiveList(list_id, list_name, num_items, list_items){
         initiallyPopulated: false,                  
         updateIntervalSet: false,
         upToDate: true,
-        editSaved: true,
+        // editSaved: true,
         isEditingList: false,
         isEditingSettings: false,
+        awaitingAddList: isPseudoAddList,
+        isEditingTitle: false,
+        
         // Configure the widget's unique attributes based upon list details
         //  This calls configureWidget for every LiveListWidget instance
         configureWidget: function() {
             // Ensure we only add new identifying details to the new list widget
             
             if(this.listId == undefined){
+                this.listWidgetIndex = numDashboardWidgets;
                 this.listId = list_id;
                 // console.log("Configuring widget " + this.listId);
                 this.listName = list_name; 
@@ -217,21 +246,26 @@ function addLiveList(list_id, list_name, num_items, list_items){
         // Generates custom html for each dashing generated widget.
         generateHTML: function(){
             if(this.listId != undefined){
-                var id = this.listId;
+                var id = this.listWidgetIndex;
                 // If there is a new list and its widget call this function
                 if($("#widget").attr("data") == "NOT_CONFIGURED"){
+                    if(id == -1){
+                         id = numDashboardWidgets;
+                    }
                     if(configuredWidgetIDs.contains(id) === false){
                         var self = this;
                         configuredWidgetIDs.push(id);
                         $("#widget").attr("data", "CONFIGURED");
 
                         $("#widget").attr("id", "widget" + id); 
+                        
                         // For unique views
                         $("#listView").attr("id", "listView" + id);
                         $("#editView").attr("id", "editView" + id);
                         // edit View also requires a hidden element which should be made unique
                         $("#hiddenItem").attr("id", "hiddenItem" + id + "-" + 0);
                         $("#settingsView").attr("id", "settingsView" + id);
+                        $("#addListButtonView").attr("id", "addListButtonView" + id);
             
                         // For unique buttons
                         $("#editButton").attr("id", "editButton" + id);
@@ -241,8 +275,9 @@ function addLiveList(list_id, list_name, num_items, list_items){
                         $("#cancelEditButton").attr("id", "cancelEditButton" + id);
                         $("#saveSettingsButton").attr("id", "saveSettingsButton" + id);
                         $("#exitSettingsButton").attr("id", "exitSettingsButton" + id);
-                        
-                        // For unique items container with locally unique item containers
+                        $("ul #addListButton").attr("id", "addListButton" + id);
+
+                        // For unique items (plural) container with locally unique item (singular) containers
                         $("#allItemsListView").attr("id", "allItemsListView" + id);
                         $("#allItemsEditView").attr("id", "allItemsEditView" + id);
             
@@ -253,7 +288,25 @@ function addLiveList(list_id, list_name, num_items, list_items){
                         }
 
                         self.initiallyPopulated = true;
+                        
+                        // Now after having a frsh widget, we change to the add new list view
+                        //  simply acting as a large button that takes you directly to the edit view
+                        //  once pressed, which is setup for new items.
+                        // if(isPseudoAddList){
+                        //     $("#addListButtonView" + id).show();
+                            
+                        //     $("#listView" + id).hide();
+                        //     $("#editView" + id).hide();
+                        //     $("#settingsView" + id).hide();
+                        // }
+                        // else{
+                            $("#listView" + id).show();
+                        // }
                     }
+                    
+                    // else if{
+                        
+                    // }
                 }
             }
         },
@@ -308,13 +361,33 @@ function addLiveList(list_id, list_name, num_items, list_items){
             console.log(this.scope);
         },
         
+        setScope: function(scope){
+            if(scope){
+                var title, timestamp, items;
+                
+                if(scope[0])
+                    title = scope[0];
+                if(scope[1])
+                    timestamp = scope[1];
+                if(scope[2])
+                    items = scope[2];
+                $.extend(this.scope, {title: title, updatedAt: timestamp, itemsData: items});
+            }
+            else{
+                console.log("Response was not populated")
+            }
+        },
+        
         // Handles the button listeners for each view of the widget
         updateWidget: function(){
             // console.log("Widget " + this.listId + " updating...");
             var self = this;
-            if(this.listId != undefined){
-                var id = this.listId;
-                if(self.listId == id){
+            if(this.listWidgetIndex != undefined){
+                var id = this.listWidgetIndex;
+                // if(id == -1){
+                //     id = numDashboardWidgets;
+                // }
+                // if(self.listId == id){
                     var animateLength = 0;
                     var currentItemsInEditList = self.itemCount;
                     
@@ -324,7 +397,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
                             // console.log("Open list edit pressed...");
                             $("#listView"+id).hide();
                             $("#editView"+id).show();
-                            self.editSaved = false;
+                            // self.editSaved = false;
                             self.isEditingList = true;
                             return;
                         }
@@ -345,6 +418,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
                         if(self.isEditingList === true){
                             console.log("Sending server new list " + id + " modifications from edit view...");
                             
+
                             // Get name of list at time of save
                             var modifiedName = $("#editView"+id+" #listName").text();
                             // console.log("Modified name: " + modifiedName);
@@ -355,7 +429,7 @@ function addLiveList(list_id, list_name, num_items, list_items){
                             $("#editView"+id+" #label").each(function(){
                                 var item = $(this).text();
                                 var itemID = $(this).parent().find('.itemID').text();
-                                console.log(item);
+                                console.log("Getting updated item: " + item);
                                 if(modifiedItems.contains(item) === false){
                                     modifiedItems.push(item);
                                     itemsString += itemID +","+ item + "|";
@@ -369,14 +443,16 @@ function addLiveList(list_id, list_name, num_items, list_items){
                             
                             var newScope = {};
                             // Connect to server with modified data in request
-                            $.get('widgets/dashboard_helper/', {"keyword":"ListDetailsEdit", "username": username, "listID": id,"listName": modifiedName, "listItems": itemsString }, function(response){
+                            $.get('widgets/dashboard_helper/', {"keyword":"ListDetailsEdit", "username": username, "userid": userid, "listID": self.listId, "listName": modifiedName, "listItems": itemsString }, function(response){
                                 // Process server's response
-                                newScope = processResponse(response);
+                                newScope = processResponse(self, response);
                                 // for(var i = 0; i < newScope.length; i++){
                                 //     console.log(newScope[i]);
                                 // }
                                 
-                                self.setScopeItems(newScope);
+                                // self.setScopeItems(newScope);
+                                
+                                self.setScope(newScope);
                                 // var scope = self.getScope();
                                 // console.log("Printing before scope...");
                                 // for(var i = 0; i < self.scope.length; i++){
@@ -398,24 +474,77 @@ function addLiveList(list_id, list_name, num_items, list_items){
                            
                             self.isEditingList = false;
                             
+                            // // If they save, we can add another add list button
+                            // if(self.awaitingAddList === true){
+                                
+                            //     self.awaitingAddList = false;
+                            //     numDashboardWidgets++;
+                            //     // Add an empty widget for the add new list "button"
+                            //     addLiveList(-1, "New List", 0, "", true);
+                            // }
+                            
                             // View update
                             $("#editView"+id).hide();
                             $("#listView"+id).show();
                         }
                     });
                     
+                    // Cancel the edit, don't save
                     $("#cancelEditButton"+id).click(function(){
                         if (self.isEditingList === true){
                             // console.log("Close edit list pressed");
-                            $("#editView"+id).hide();
-                            $("#listView"+id).show();
-                            // Didn't save it but need to reset this boolean
-                            // self.editSaved = true;
+                            // Return to add list button view
+                            if(self.awaitingAddList === true){
+                                $("#editView"+id).hide();
+                                $("#addListButtonView"+id).show();
+                            }
+                            // Show list view
+                            else{
+                                $("#editView"+id).hide();
+                                $("#addListButtonView"+id).hide();
+                                $("#listView"+id).show();
+                                // 
+                            }
                             self.isEditingList = false;
                         }
                     });
                     
-                    // Edit View Listeners
+                    // Edit View Listeners 
+                    // TODO - UI would look real nice if the buttons for each item only showed up on hover
+                    //        Same for title, but could outlign or something on hovering over it
+                    
+                    // Title is clicked in edit view 
+                    $("#editView"+id+" #listName").click(function(){
+                        if (self.isEditingTitle === false){
+                            // alert("List " + id + " title clicked...");
+                            var oldName = $(this).text();
+                            $(this).replaceWith("<input id='listNameInput' type='text' value='" + oldName + "'>");
+                            self.isEditingTitle = true;
+                        }
+                    });
+                    
+                    // Accept title change
+                    // On focusout
+                   $("#editView"+id+" #listNameInput").focusout(function(){
+                        if (self.isEditingTitle === true){
+                            self.listName = $(this).val();
+                            $(this).replaceWith("<h1 id='listName'>" + self.listName + "</h1>");
+                            self.isEditingTitle = false;
+                        }
+                    });
+                    // On enter key
+                    $(document).on('keypress', function(e){
+                        if (self.isEditingTitle === true){
+                            if(e.which == 13){
+                                console.log("Pressed enter");
+                                // $("#editView"+id+" #listNameInput").focusout(function(){
+                                    var newName = $("#editView"+id+" #listNameInput").val();
+                                    $("#editView"+id+" #listNameInput").replaceWith("<h1 id='listName'>" + newName + "</h1>");
+                                    self.isEditingTitle = false;
+                            }
+                        }
+                    });
+                    
                     // Item is clicked in edit view, transform to text entry, don't increment itemsModifed until change accepted
                     $("#editView"+id+" #label").click(function(){
                         if (self.isEditingItem === false){
@@ -488,7 +617,25 @@ function addLiveList(list_id, list_name, num_items, list_items){
                             self.isEditingSettings = false;
                         }
                     });
-                }
+                    
+                    // ############################
+                    // Add List Button
+                    // ############################
+                    // $("ul #addListButton"+self.listWidgetIndex).click(function(){
+                    //     if(self.awaitingAddList === true){
+                    //         if(self.isEditingList === false){
+                    //             console.log("Add new list button pressed...");
+                    //             $("#addListButtonView"+id).hide();
+                    //             $("#listView"+id).hide();
+                                
+                    //             $("#editView"+id).show();
+                    //             // self.awaitingAddList = true;
+                    //             self.isEditingList = true;
+                    //             return;
+                    //         }
+                    //     }
+                    // });
+                // }
             }
         }
     }); // end addWidget
@@ -604,19 +751,65 @@ function getTimestamp(){
     $(add_list).click(function(){
         // console.log("Adding new list, there were " + numDashboardWidgets + " lists. Adding another...")
         numDashboardWidgets++;
-        var newListId = numDashboardWidgets;
+        // var newListId = numDashboardWidgets;
+        
+        // TODO - Make this better
         var newListName = username + "'s New List";
+        
+        
         var newItems = new Array();
+        var itemsString = "";
         for(var i = 1; i <= newListItems; i++){
             //console.log(newItemsContainer.find("#item"+i+" input").val());
             // Add the new items to an array
             var item = {label: newItemsContainer.find("#item"+i+" input").val(), value: ''};
             newItems.push(item);
+            itemsString += "-1" +","+ item + "|";
             // console.log(newItems[i-1]);
         }
         
-        // Add new list widget
-        addLiveList(newListId, newListName, newListItems, newItems);
+        
+        
+        // Get name of list at time of save
+        // var modifiedName = $("#editView"+id+" #listName").text();
+        // console.log("Modified name: " + modifiedName);
+        
+        // Get all items currently in the edit view at time of save
+        // var modifiedItems = new Array();
+        // var itemsString = "";
+        // $("#editView"+id+" #label").each(function(){
+        //     var item = $(this).text();
+        //     var itemID = $(this).parent().find('.itemID').text();
+        //     console.log("Getting updated item: " + item);
+        //     if(modifiedItems.contains(item) === false){
+        //         modifiedItems.push(item);
+        //         itemsString += itemID +","+ item + "|";
+                
+        //         // console.log(item);
+        //     }
+        //     // console.log(itemsString);
+        // });
+        
+        // TODO - need to call DB to give new items
+        //        the widget should then be made from data extracted from process request
+        // Perhaps it would be better to place within process request
+            // Connect to server and request data for user username
+        $.get('widgets/dashboard_helper/', {"keyword":"AddListRequest", "username": username, "userid": userid, "listID": -1, "listName": newListName, "listItems": itemsString}, function(response){
+            // Process server's response
+            var newWidgetDetails = processResponse(null, response);
+            
+            // newWidgetDetails
+            // [0] - new list id
+            // [1] - new list name
+            // [2] - new lisi num items
+            // [3] - new list items
+            
+            // Add new list widget
+            addLiveList(newWidgetDetails[0], newWidgetDetails[1], newWidgetDetails[2], newWidgetDetails[3]);
+            
+        }); //Kevin added a semicolon
+        
+        
         
     });
     

@@ -7,7 +7,7 @@
 
 <div id='widget' class="widgetContainer" data="NOT_CONFIGURED" >
     <!-- Primary widget view, shows list details -->
-    <div id="listView">
+    <div id="listView" style="display:none">
       <h1 id="listName">{ title }</h1>
       <ul id="allItemsListView">
         <li id="listItem" rv-each-item="itemsData">
@@ -122,6 +122,15 @@
       </ul> 
       
     </div>
+    
+    
+    <!-- Add list view, widget is a button -->
+    <div id="addListButtonView" style="display: none;">
+      <ul id="addListButton">
+        <span><a type="button" class="btn btn-block btn-success">Add new list</a></span>
+      </ul>
+    </div>
+    
     
     <!--<h1>{ title }</h1>-->
     <!--<ul>-->

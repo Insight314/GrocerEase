@@ -182,10 +182,13 @@ def index(request):
 
 
 def gen(request):
-    context = {'productCount': products.objects.count()}
+    #major debug page
+    context = {'productCount': products.objects.count(), 'listCount': lists.objects.count(), 'itemCount': items.objects.count(), 'mylists': lists.objects.filter(list_creator_id = request.user.id).count()}
     if request.method == 'POST':
         if 'purge_products' in request.POST:
-            context['message'] = "purge received, but not acted on" #placeholder
+            context['message'] = "PRODUCTS PURGED" #placeholder
+            for p in products.objects.all():
+                p.delete()
     
         
     return render(request, 'gen.html',context)
@@ -215,12 +218,22 @@ def gen(request):
 #I obviously know nothing about best practices for Django, so someone who does should deal with it.
 #############
 #------List operations----------------------------------------------------------
+# Get list name
+def get_list_name(list_id):
+    return get_list(list_id).list_name;
+    
+    
 #Function that retrieves a given user's created lists
-#needs user form for receiving and list form for sending?
+#needs user form for receiving and list form for sending
 def get_user_lists(user_name):
      users_lists = []
      user = User.objects.get(username = user_name)
+    
+     #TODO: But like actually fix this at some point in the future lol
      users_lists = user.users_lists.all()
+     #users_lists = lists.objects.filter(list_creator_id = user.id)
+     #fix #collaboration
+     
      
      if not users_lists:
         return "User currently has no lists!"
@@ -229,18 +242,30 @@ def get_user_lists(user_name):
         
 #obtains a list from the database
 def get_list(l_id):
-    return lists.objects.get(list_id = l_id)
+    try:
+        return lists.objects.get(list_id = l_id)
+    except:
+        # print l_id
+        print "Couldn't get_list()"
+        return 
     
 #function that creates a list for a particular user
 def create_list(user_name, new_list_name):
+    print "Create list called"
     user = User.objects.get(username = user_name)
     if not user:
         return "Error, user does not exist!"
     else:
-        new_list = lists(list_name = new_list_name, is_premade = 0, list_creator_id = user.id)
-        new_list.save()
-        new_list.list_users.add(user)
-        return "List %s successfully created for user %s." % (new_list_name,user.username)
+        try:
+            new_list = lists(list_name = new_list_name, is_premade = 0, list_creator_id = user.id)
+            new_list.save()
+            new_list.list_users.add(user)
+            new_list.save()
+            print "List %s %s successfully created for user %s." % (new_list_name,new_list.list_id, user.username)
+            return new_list.list_id
+        except Exception, e:
+            print "Create list fucked up"
+            print e
     
 #changes the list title to the passed in new list title
 def title_edit(l_id,new_title):
@@ -384,13 +409,15 @@ def remove_user(l_id, u_id):
 
 #function that retrieves a single list's items      
 def get_list_items(user_list):
-     list_items = items.objects.filter(containing_list_id = user_list.list_id)
-     
-     if not list_items:
-         return "The list has no items!"
+
+    list_items = items.objects.filter(containing_list_id = user_list.list_id)
     
-     else:
-         return list_items
+    if not list_items:
+        return "The list has no items!"
+    
+    else:
+        # print list_items
+        return list_items
          
 #function that creates an item for a user's list
 def create_item(user_name, containing_list_name, new_item_name, details, quantity):

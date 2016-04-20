@@ -52,6 +52,7 @@ class DashboardHelper(Widget):
             
             # Initial population of the dashboard
             if keyword == "InitialLoad":
+                print "Received initial load request"
                 return json.dumps(self.initial_load(request))
                 
             # List details edit requests
@@ -75,7 +76,7 @@ class DashboardHelper(Widget):
                 return json.dumps(self.processAddListRequest(request))
                 
         except Exception, e:
-            print "Unexpected request: "
+            print "Unexpected request, exception: "
             print e
             
         return
@@ -93,41 +94,58 @@ class DashboardHelper(Widget):
         list_items_checkedStatus=[]
         
         username = str(request.GET.__getitem__('username'))
+        userid = str(request.GET.__getitem__('userid'))
         
-        # Get all user's lists
+        print "User: "+ username +"  ID: " + userid
+        
+        # Get all user's lists and package for response
         lists = self.getAllUsersLists(username)
+        print lists
         if lists:
             numLists = len(lists)
+            print "User has " + str(numLists) + " lists"
+            
             # Loop through each list and populate attributes
             for x in range(0, numLists):
-                list = lists[x]
-                list_ids += [str(list.list_id)]
-                list_names += [str(list.list_name)]
-                list_items_ids += [str(".")] # Used as delimiter
-                list_items += [str(".")]
-                list_items_quantity += [str(".")]
-                list_items_details += [str(".")]
-                list_items_checkedStatus += [str(".")]
-                
-                list_items_ids += [str(list.list_id)] # list id is added to items list for identification
-                list_items += [str(list.list_id)]
-                list_items_quantity += [str(list.list_id)]
-                list_items_details += [str(list.list_id)]
-                list_items_checkedStatus += [str(list.list_id)]
-                
-                print ("Getting list " +  str(list.list_id) + " for user " + username)
-                
-                # Get all user's items 
-                items = self.getAllListItems(username, x)
-                if items:
-                    # Add each item to the list
-                    for item in items:
-                        list_items_ids += [str(item.item_id)]
-                        list_items += [str(item.item_name)]
-                        list_items_quantity += [str(item.item_quantity)]
-                        list_items_details += [str(item.item_details)]
-                        list_items_checkedStatus += [str(item.checked_status)]
+                list1 = lists[x]
+                if list1: 
+                    list_ids += [str(list1.list_id)]
+                    list_names += [str(list1.list_name)]
+
+                    # Add delimiters
+                    list_items_ids += [str(".")] # Used as delimiter
+                    list_items += [str(".")]
+                    list_items_quantity += [str(".")]
+                    list_items_details += [str(".")]
+                    list_items_checkedStatus += [str(".")]
+                    
+                    # List id will preceed the attributes for that list in their containers
+                    list_items_ids += [str(list1.list_id)] 
+                    list_items += [str(list1.list_id)]
+                    list_items_quantity += [str(list1.list_id)]
+                    list_items_details += [str(list1.list_id)]
+                    list_items_checkedStatus += [str(list1.list_id)]
+                    
+                    print "List - " + str(list1.list_name) + " (ID: " + str(list1.list_id) + "): "
+
+                    # Get all user's items 
+                    items = self.getAllListItems(username, list1.list_id)
+                    if items:
+                        # Add each item to the list
+                        for item in items:
+                            if item:
+                                list_items_ids += [str(item.item_id)]
+                                list_items += [str(item.item_name)]
+                                list_items_quantity += [str(item.item_quantity)]
+                                list_items_details += [str(item.item_details)]
+                                list_items_checkedStatus += [str(item.checked_status)]
+                            else:
+                                print "Could not get items for packaging"
+                    else:
+                        print "Could not get items for packaging"
+                        return
                 else:
+                    print "Could not get list for packaging"
                     return
             return {
                 'keyword': "InitialLoad",
@@ -140,87 +158,58 @@ class DashboardHelper(Widget):
                 'list_items_checkedStatus': list_items_checkedStatus,
             }
         else:
+            print "Could not get users lists for client initial info population response "
             return
         
     # Processes the edit list details requests
     def processEditDetailsRequest(self, request):
-        # Containers
+        # Vars
         list_id=str(request.GET.__getitem__('listID'))
         list_name=str(request.GET.__getitem__('listName'))
         list_items=request.GET.__getitem__('listItems')
-        split_items = list_items.split('|')
-        for item in split_items:
-            item.split(',')
-            print item
-
-        list_items_ids=[] 
-        list_items_quantity=[]
-        list_items_details=[]
-        list_items_checkedStatus=[]
-        
+        print list_items
         username = str(request.GET.__getitem__('username'))
+        dbAck = "Fail" # DB ack - Was DB update successful? ("Success/Fail")
+        
         
         # Get list in DB with listI_id and username
         #   Comapare to see if different
         # Add new stuff to database
         #   Check if successful and store in dbAck
         tmpList = views.get_list(list_id)
-        tmpListItems = views.get_list_items(tmpList)
-        
-        # DB ack - Was DB update successful? ("Success/Failed")
-        dbAck = "Fail"
-        #Changes the name of the list if the name is different when compared
-        if tmpList.list_name != list_name:
-            if views.title_edit(list_id,list_name) == 1:
-                dbAck = "Success"
-            else:
-                dbAck = "Fail"
-            
-        #addd any items to the database/list that are not already in it
-        for item in split_items:
-            split_item = item.split(',')
-            if split_item[0] == '-1':
-                if views.create_item(username,list_name,split_item[1],'','') == 1:
-                    dbAck = "Success"    
+
+        try:    
+            # Changes the name of the list if the name is different when compared
+            if tmpList.list_name != list_name:
+                if views.title_edit(list_id,list_name) == 1:
+                    dbAck = "Success"
                 else:
+                    print "Title edit failed"
                     dbAck = "Fail"
-        
-        list_items = []
-        list_items_ids += [str(".")] # Used as delimiter
-        list_items += [str(".")]
-        list_items_quantity += [str(".")]
-        list_items_details += [str(".")]
-        list_items_checkedStatus += [str(".")]
-        
-        list_items_ids += [str(list_id)] # list id is added to items list for identification
-        list_items += [str(list_id)]
-        list_items_quantity += [str(list_id)]
-        list_items_details += [str(list_id)]
-        list_items_checkedStatus += [str(list_id)]
-        
-        print "Getting updated list items for list " + list_id
-        # Get all user's updated items 
-        items = self.getAllListItems(username, int(list_id))
-        if items:
-            # Add each item to the list
-            for item in items:
-                list_items_ids += [str(item.item_id)]
-                list_items += [str(item.item_name)]
-                list_items_quantity += [str(item.item_quantity)]
-                list_items_details += [str(item.item_details)]
-                list_items_checkedStatus += [str(item.checked_status)]
-        
-        return {
-            'Ack': dbAck,
-            'keyword': "ListDetailsEdit",
-            'list_ids': [list_id],
-            'list_names': [list_name],
-            'list_items_ids': list_items_ids,
-            'list_items': list_items,
-            'list_items_quantity': list_items_quantity,
-            'list_items_details': list_items_details,
-            'list_items_checkedStatus': list_items_checkedStatus,
-        }
+
+            split_items = list_items.split('|')
+            for item in split_items:
+                item.split(',')
+                # print item        
+                
+            # Add any items to the database/list that are not already in it
+            for item in split_items:
+                split_item = item.split(',')
+                if split_item[0] == '-1':
+                    
+                    # TODO 
+                    # Things are failing here....
+                    if views.create_item(username,list_name,split_item[1],'','') == 1:
+                        dbAck = "Success"    
+                    else:
+                        print "Item creation failed"
+                        dbAck = "Fail"
+        except:
+            print "Editing list DB record failed"
+
+        print "Packaging edit list ack"
+        return self.packageListDetails(username, list_id, dbAck, "ListDetailsEdit")
+    
     
     #NEEDS TESTING
     # Process the edit list settings requests: add/remove users, add/remove tags
@@ -311,6 +300,13 @@ class DashboardHelper(Widget):
         # Get the username
         username = str(request.GET.__getitem__('username'))
         print username
+        # Get the userid
+        userid = str(request.GET.__getitem__('userid'))
+        print userid
+        
+        # Get the list_id
+        list_id = str(request.GET.__getitem__('listID'))
+        print list_id
         # Get the title
         name = str(request.GET.__getitem__('listName'))
         print name
@@ -318,13 +314,77 @@ class DashboardHelper(Widget):
         listItems = str(request.GET.__getitem__('listItems'))
         print listItems
 
-        return {
-            # 'list_ids': self.list_ids,
-            'Ack': "I got your shit yo",        
-        }
+        return  {'Ack': dbAck,
+            'keyword': "AddListRequest",
+            'list_ids': [list_id],
+            'list_names': [views.get_list_name(list_id)],
+            'list_items_ids': list_items_ids,
+            }
+        # return packageListDetails(usernaem, list_id, dbAck, "AddListRequest")
 
 
     # Helper functions
+    
+    # Returns updated records of specified list details from the DB packaged for use by the dashboard
+    def packageListDetails(self, username, list_id, dbAck, keyword):
+        list_items = []
+        list_items_ids=[] 
+        list_items_quantity=[]
+        list_items_details=[]
+        list_items_checkedStatus=[]
+        
+        list_items_ids += [str(".")] # Used as delimiter
+        list_items += [str(".")]
+        list_items_quantity += [str(".")]
+        list_items_details += [str(".")]
+        list_items_checkedStatus += [str(".")]
+        
+        list_items_ids += [str(list_id)] # list id is added to items list for identification
+        list_items += [str(list_id)]
+        list_items_quantity += [str(list_id)]
+        list_items_details += [str(list_id)]
+        list_items_checkedStatus += [str(list_id)]
+            
+
+            
+        print "Getting updated list items for list " + str(list_id)
+        try:
+            # Get all user's updated items 
+            items = self.getAllListItems(username, list_id)
+        except:
+            print "Failed getting updated list items for list " + str(list_id)
+            return
+        
+        # This print type returns NoneType which means ther are no items at this point.
+        #   This is the initial load when the dashboard first populates.
+        
+        # print items
+        if items:
+            print "Got " + str(len(items)) + " items"
+            # Add each item to the list
+            for item in items:
+                # print item.type()
+                print str(item.item_name)
+                list_items_ids += [str(item.item_id)]
+                list_items += [str(item.item_name)]
+                list_items_quantity += [str(item.item_quantity)]
+                list_items_details += [str(item.item_details)]
+                list_items_checkedStatus += [str(item.checked_status)]
+
+
+        return {
+            'Ack': dbAck,
+            'keyword': keyword,
+            'list_ids': [list_id],
+            'list_names': [views.get_list_name(list_id)],
+            'list_items_ids': list_items_ids,
+            'list_items': list_items,
+            'list_items_quantity': list_items_quantity,
+            'list_items_details': list_items_details,
+            'list_items_checkedStatus': list_items_checkedStatus,
+        }   
+  
+        
     #   Currently, these are only error checking these queries and making conveinant functions
     #   Error checking should be in views too, but truly not mandatory yet
     def getAllUsersLists(self, username):
@@ -337,9 +397,10 @@ class DashboardHelper(Widget):
         
     def getAllListItems(self, username, list_id):
         try:
-            return views.get_list_items(views.get_user_lists(username)[list_id])
+            print views.get_list_items(views.get_list(list_id))
+            return views.get_list_items(views.get_list(list_id))
         except Exception, e:
-            print "List " + list_id + " could not be found for user " + username
+            print "List " + str(list_id) + " could not be found for user " + username
             print e
             return
         
