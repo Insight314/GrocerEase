@@ -224,19 +224,30 @@
             // self.publish(name + '/changeSize');
             self.subscribe(name + '/configureWidget', widget.configureWidget.bind(widget));
             self.publish(name + '/configureWidget');
+            
             self.subscribe(name + '/sync', widget.sync.bind(widget));
-            // self.publish(name + '/sync');
+            // self.subscribe(name + '/setRequiresSync', widget.setRequiresSync.bind(widget));
+
             self.subscribe(name + '/updateWidget', widget.updateWidget.bind(widget));
+            // Single call
             self.publish(name + '/updateWidget');
+            
             self.subscribe(name + '/generateHTML', widget.generateHTML.bind(widget));
 
             widget.interval = Number(widget.interval);
             if (isNaN(widget.interval) || widget.interval === 0) return;
             
-            // console.log(name);
+            
+            // TODO - set these intervals within the livelist widget
+            //  Would be nice to do a single publish call and have it start a scheduler for the
+            //  various intervals
+            
+            // Interval call
             setInterval(self.publish.bind(null, name + '/generateHTML'), 500);
 
-            // setInterval(self.publish.bind(null, name + '/sync'), 30000);
+            // setInterval(self.publish.bind(null, name + '/sync'), 15000);
+            // setInterval(self.publish.bind(null, name + '/setRequiresSync'), 10000);
+
             
             var updateInterval = setInterval(self.publish.bind(null, name + '/updateWidget'), 1000);
             // setTimeout(function(){

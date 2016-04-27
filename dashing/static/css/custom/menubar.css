@@ -6,3 +6,6 @@
     color: #fff;
     text-decoration: none;
 }
+.center, .center-align {
+  text-align: center;
+}

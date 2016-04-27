@@ -1,10 +1,14 @@
 .modalDialog {
 	position: fixed;
     /*font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+    text-align: center;
 	top: 0;
 	right: 0;
 	bottom: 0;
 	left: 0;
+	
+	
+	
 	background: rgba(0,0,0,0.8);
 	z-index: 99999;
 	opacity:0;
@@ -24,8 +28,8 @@
 .modalDialog > div {
 	width: 400px;
 	position: relative;
-	margin: 10% auto;
-	padding: 5px 20px 13px 20px;
+	margin: 15% auto;
+	padding: 15px 20px 13px 20px;
 	border-radius: 10px;
 	background: #aaa;
 	/*background: -moz-linear-gradient(#fff, #999);*/
@@ -33,7 +37,21 @@
 	/*background: -o-linear-gradient(#fff, #999);*/
 }
 
-/* Modal title color */
+/* Modal title */
 .modalDialog h3 {
     color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 5px;
+}
+
+
+/* Modal items  */
+.modalDialog .input-group {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+/* Modal save  */
+.modalDialog .addListButtonWrapper {
+    margin-top: 5px;
+    margin-bottom: 5px;
 }

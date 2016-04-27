@@ -6,53 +6,80 @@
 <!--   This variable holds all attributes needed to fill the various containers-->
 
 <div id='widget' class="widgetContainer" data="NOT_CONFIGURED" >
-    <!-- Primary widget view, shows list details -->
-    <div id="listView" style="display:none">
-      <h1 id="listName">{ title }</h1>
-      <ul id="allItemsListView">
-        <li id="listItem" rv-each-item="itemsData">
-          <span class="itemID" style="display:none">{ item.id }</span>
-          <!--<span class="checkedStatus" style="display:none">{ item.checkedStatus }</span>-->
-          <span class="item">{ item.label }</span>
-          <span class="quantity">{ item.quantity }</span>
-        </li>
-      </ul>
-      
-      <ul id="editButton">
-        <span><a type="button" class="btn btn-block btn-danger">Edit</a></span>
-      </ul>
-      
-      <ul id="settingsButton">
-        <span><a type="button" class="btn btn-block btn-primary">Settings</a></span>
-      </ul>
-      
-      <p class="updated-at" rv-show="updatedAt">{ updatedAt }</p>
+  
+    <!-- Tag stuff to make it look less ghetto -->
+    <div id="tagDisplay">
+      <div id="HealthyTagAlert"   class="tagColor UnsetColor"></div>
+      <div id="UnhealthyTagAlert" class="tagColor UnsetColor"></div>
+      <div id="CheapTagAlert"     class="tagColor UnsetColor"></div>
+      <div id="ExpensiveTagAlert" class="tagColor UnsetColor"></div>
+      <div id="MealTagAlert"      class="tagColor UnsetColor"></div>
+
       
     </div>
+    <!--<div id="listDisplay">-->
+  
+    <!-- Primary widget view, shows list details -->
+    <div id="listView" class="viewContents" style="display:none" >
+      <!--<div class='contents'>-->
+        <h1 id="listName">{ title }</h1>
+        <ul id="allItemsListView">
+          <li id="listItem" class='itemContainer' rv-each-item="itemsData">
+            <div class="input-group">
+              <span class="itemID" style="display:none">{ item.id }</span>
+              <span class="checkedStatus" style="display:none">{ item.checkedStatus }</span>
+              <span class="item">{ item.label }</span>
+              <span>
+              <span class="quantity">{ item.quantity }</span>
+              <span id='itemCheckButton' class="input-group-btn" style="display:none">
+                  <a id='checkButton' class='btn btn-secondary btn-success' role='button'>√</a>
+              </span>
+              <span id='itemUncheckButton' class="input-group-btn" style="display:none">
+                  <a id='uncheckButton' class="btn btn-secondary btn-danger" role="button">X</a>
+              </span>
+            </span>
+            </div>
+          </li>
+        </ul>
+        <div class='input-group'>
+          <ul id="editButton" class='input-group-btn'>
+            <span><a type="button" class="btn btn-block btn-listview">Edit</a></span>
+          </ul>
+          
+          <ul id="settingsButton" class='input-group-btn'>
+            <span><a type="button" class="btn btn-block btn-listview">Settings</a></span>
+          </ul>
+        </div>
+      <!--</div>-->
+
+      <p class="updated-at" rv-show="updatedAt">{ updatedAt }</p>
+    </div>
+    
+    <!--</div>-->
     
     
     
     <!-- Edit view, similar to list details with different buttons and ability to edit entries -->
-    <div id="editView" style="display: none;">
+    <div id="editView" class="viewContents" style="display: none;">
       <h1 id="listName">{ title }</h1>
       <ul id="allItemsEditView">
-        <li id="editItem" rv-each-item="itemsData">
+        <li id="editItem" class='itemEditContainer emptyItem' style="display:none">
           <div class="input-group">
-            <span class="itemID" style="display:none">{ item.id }</span>
-            <span id='label'>{ item.label }</span>
-            <span class="input-group-btn">
+            <span class="itemID" style="display:none"></span>
+            <span id='label'></span>
+            <span id='itemDetailsButton' class="input-group-btn" style="display:none">
               <a id='itemDetails' class="btn btn-secondary btn-primary" role="button">Details</a>
             </span>
-            <span class="input-group-btn">
+            <span id='itemRemoveButton' class="input-group-btn" style="display:none">
               <a id='removeItem' class="btn btn-secondary btn-danger" role="button">Remove</a>
             </span>
           </div>
         </li>
-        <li id="hiddenItem">  
+        <!--<li id="hiddenItem">  -->
           <!-- Used to avoid .append. Is hidden until a new item is added -->
           <!-- It will then be replaced by a new item and duplicate hidden class-->
-          <div class="input-group" type="hidden"></div>
-        </li>
+        <!--  <div class="input-group" type="hidden"></div>-->
+        <!--</li>-->
       </ul>
       
       <ul id="addNewItemButton" >
@@ -72,41 +99,83 @@
     
     
     <!-- Settings panel, the list details are fully covered by this panel -->
-    <div id="settingsView" style="display: none;">
+    <div id="settingsView" class="viewContents" style="display: none;">
       <h1>List Settings</h1>
       <ul>
         <ul>
           <span>Recurrence</span>
           <ul>
-            <button type="button" class="btn btn-default btn-success">One-time</button>
-            <button type="button" class="btn btn-default btn-default">Repeat</button>
+            <button id='defaultRepeatButton' type="button" class="btn btn-default btn-success">One-time</button>
+            <button id='repeatButton' type="button" class="btn btn-default btn-default">Repeat</button>
           </ul>
         </ul>
 
         <ul>
           <span>Tags</h3>
+          <ul id="setTagsWrapper">
+            
+            <button id="Healthy" type="button" style="display: none;" class="setTag btn btn-default btn-success">Healthy</button>
+            <button id="Unhealthy" type="button" style="display: none;" class="setTag btn btn-default btn-danger">Unhealthy</button>
+            <button id="Cheap" type="button" style="display: none;" class="setTag btn btn-default btn-info">Cheap</button>
+            <button id="Expensive" type="button" style="display: none;" class="setTag btn btn-default btn-warning">Expensive</button>
+            <button id="Meal" type="button" style="display: none;" class="setTag btn btn-default btn-primary">Meal</button>
+          </ul>
+          <ul>  
+            <button id='addTagButton' type="button" class="btn btn-default btn-default btn-block">Edit tags</button>
+          </ul>
           <ul>
-            <button type="button" class="btn btn-default btn-success">Healthy</button>
-            <button type="button" class="btn btn-default btn-default">Add new tag</button>
+            <!-- This is UBER bad practice, but I'm not sacrificing my sanity -->
+        		<div id="editTagsWrapper" style="display:none">
+        		  <div>Available:</div>
+              <div>
+                <span>
+                  <button id="Healthy" type="button" style="display: none;" class="tag btn btn-default btn-success btn-block">Healthy</button>
+                </span>
+                <span>
+                  <button id="Unhealthy" type="button" style="display: none;" class="tag btn btn-default btn-danger btn-block">Unhealthy</button>
+                </span>
+                <span>
+                  <button id="Cheap" type="button" style="display: none;" class="tag btn btn-default btn-info btn-block">Cheap</button>
+                </span>
+                <span>
+                  <button id="Expensive" type="button" style="display: none;" class="tag btn btn-default btn-warning btn-block">Expensive</button>
+                </span>
+                <span>
+                  <button id="Meal" type="button" style="display: none;" class="tag btn btn-default btn-primary btn-block">Meal</button>
+                </span>
+              </div>
+            </div>
           </ul>
         </ul>
 
         <ul>
           <span>Shared with</span>
-          <ul>
-            <button type="button" class="btn btn-default btn-info">Chris D.</button>
-            <button type="button" class="btn btn-default btn-info">Kevin S.</button>
-            <button type="button" class="btn btn-default btn-info">Abel T.</button>
+          <ul id="setUsersWrapper">
+            <!--
+            
+            <button id="[USERNAME]" type="button" class="setUser btn btn-default btn-info">Chris D.</button>
+            
+            -->
+
           </ul>
           <ul>
-            <button type="button" class="btn btn-default btn-default">Add new collaborator</button>
+            <button id="setNewUserButton" type="button" class="btn btn-default btn-default btn-block">Edit collaborators</button>
+            
+            <div id="setUserInput"class="input-group" style="display: none;">
+              <input type="text" class="form-control" placeholder="Search for...">
+              <span class="input-group-btn">
+                <button id="addUserButton" class="btn btn-default" type="button">Add</button>
+                <button id="cancelAddUserButton" class="btn btn-default btn-danger" type="button">Exit</button>
+              </span>
+            </div>
+            
           </ul>
         </ul>
         
         <ul>
           <span>Delete or leave list</span>
           <ul>
-            <a type="button" class="btn btn-block btn-danger">Delete/Leave List</a>
+            <a id="leaveListButton" type="button" class="btn btn-block btn-danger">Delete/Leave List</a>
           </ul>
         </ul>
       </ul>
@@ -122,15 +191,47 @@
       </ul> 
       
     </div>
+    </div>
+    
+    
+    
+    
+    <!-- Tag Settings modal-->
+    <!--<div id="editTagsModal" >-->
+    <!--	<div class="editTagsContainer">-->
+    <!--		<h3 id='editTagsTitle'>Edit Tags</h3>-->
+    		
+    <!--		<div id="editTagsWrapper">-->
+    <!--      <div class="input-group">-->
+    <!--        <span class="input-group-addon">-->
+    <!--          <input type="checkbox" aria-label="Checkbox for following text input">-->
+    <!--        </span>-->
+    <!--        <input type="text" class="form-control" aria-label="Text input with checkbox">-->
+    <!--      </div>-->
+    <!--    </div>-->
+        
+    <!--    <div class="saveTagsButtonWrapper">-->
+    <!--    		<a id="saveTagsButton" href="#" role="button" class="btn btn-block btn-success">Save</a>-->
+    <!--		</div>-->
+    <!--		<div>-->
+    <!--    		<a id='cancelEditTagsButton' href="#close" role="button" class="btn btn-block btn-danger">Cancel</a>-->
+    <!--		</div>-->
+    <!--	</div>-->
+    <!--</div>-->
+    
+    
+    
     
     
     <!-- Add list view, widget is a button -->
-    <div id="addListButtonView" style="display: none;">
-      <ul id="addListButton">
-        <span><a type="button" class="btn btn-block btn-success">Add new list</a></span>
-      </ul>
-    </div>
+    <!--<div id="addListButtonView" style="display: none;">-->
+    <!--  <ul id="addListButton">-->
+    <!--    <span><a type="button" class="btn btn-block btn-success">Add new list</a></span>-->
+    <!--  </ul>-->
+    <!--</div>-->
     
+    
+  
     
     <!--<h1>{ title }</h1>-->
     <!--<ul>-->

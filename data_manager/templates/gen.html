@@ -36,28 +36,79 @@
 
 {% block stylesheets %}
 <link rel="stylesheet" href="{% static 'css/signin.css' %}">
+<link type="text/css" rel="stylesheet" href="{% static 'css/materialize/css/materialize.min.css' %}"  media="screen,projection"/>
+<link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 {% endblock %}
     
     
   </head>
   <body>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="{% static 'css/materialize/js/materialize.min.js' %}"></script>
     <div class="container">
 
       {% block message %}{% endblock %}{% block body_block %}{% endblock %}{% block content %}
-      <div class="form">
-            Products Generated: {{ productCount }}
+        
+      <div class="row">
+        <div class="col s12 m6">
+          <div class="card blue-grey darken-1">
+            <div class="card-content white-text">
+              <span class="card-title">{% trans "Logged in as: " %} {% if user.is_authenticated %}{{ user.username }}{% else %}Null{% endif %}</span>
+               <p>All Users: <br><br>{% for Auser in userList %}  {{Auser.1}}: {{Auser.0}} {% if user.id == Auser.1 %} <font color="red">(you)</font>  {% endif %}<br> {% endfor %}</p>
+            </div>
+            <div class="card-action">
+              <a href="#">This is a link</a>
+              <a href="#">This is a link</a>
+            </div>
+          </div>
         </div>
+        <div class="col s12 m6">
+          <div class="card blue-grey darken-1">
+            <div class="card-content white-text">
+              <span class="card-title">Products</span>
+              <p>{% trans "There are currently" %} {{ productCount }} {% trans "products." %}</p>
+            </div>
+            <div class="card-action">
+              <form action="{% url 'data:gen' %}" method = "post" enctype = "multipart/form-data">
+              <!--<a href="#">This is a link</a>-->
+              <!--<a href="#">This is a link</a>-->
+              {% csrf_token %}<input style="width:30%;" class="waves-effect waves-light btn" type="submit" name="purge_products" value="Purge These?" /></form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col s12 m6">
+          <div class="card blue-grey darken-1">
+            <div class="card-content white-text">
+              <span class="card-title">{% trans "There are currently" %} {{listCount}} {% trans "lists." %}</span>
+              <p>{% trans "You currently own" %} {{mylists}} {% trans "of these." %}<br>{% trans "There are currently" %} {{itemCount}} {% trans "items." %}</p>
+            </div>
+            <div class="card-action">
+              <a href="#">This is a link</a>
+              <a href="#">This is a link</a>
+            </div>
+          </div>
+        </div>
+        <div class="col s12 m6">
+          <div class="card blue-grey darken-1">
+            <div class="card-content white-text">
+              <span class="card-title">Card Title</span>
+              <p>I am a very simple card. I am good at containing small bits of information.
+              I am convenient because I require little markup to use effectively.</p>
+            </div>
+            <div class="card-action">
+              <a href="#">This is a link</a>
+              <a href="#">This is a link</a>
+            </div>
+          </div>
+        </div>
+      </div>
 <!-- Broke the line below to avoid reset password zone....-->
-<!--<p>{/% trans "Forgot your password, huh?" %} <a href="{/% url 'auth_password_reset' %}">{/% trans "Reset it" %}</a>.</p>-->
-<p class ="other-text">{% trans "Various debug info and fun buttons: " %}</p>
-<p class ="other-text">{% trans "Logged in as: " %} {% if user.is_authenticated %}{{ user.username }} , ID: {{ user.id }}{% else %}Null{% endif %}</p>
-<form action="{% url 'data:gen' %}" method = "post" enctype = "multipart/form-data"><p class ="other-text">{% trans "There are currently" %} {{ productCount }} {% trans "products." %} 
-            {% csrf_token %}<input style="width:30%;" class="btn btn-default btn-md" type="submit" name="purge_products" value="Purge These?" /></form></p><br>
-            <p class ="other-text">{% trans "There are currently" %} {{listCount}} {% trans "lists." %}</p>
-            <p class ="other-text">>>>{% trans "You currently own" %} {{mylists}} {% trans "of these." %}</p><br>
-            <p class ="other-text">{% trans "There are currently" %} {{itemCount}} {% trans "items." %}</p>
-            
-            
+<!--<p>{/% trans "Forgot your password, huh?" %} <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>.</p>-->
 
 <p class ="other-text">{% trans "Ready to leave?" %} <a href="{% url 'dashboard' %}">{% trans "Return Home" %}</a>.</p>
 <br><br>

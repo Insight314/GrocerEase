@@ -1,7 +1,83 @@
 /* Color of the list*/
-.widget-livelist>div { 
+
+
+/* Highlight (Color of div container) of the list items */
+/*.widget-livelist  div{ */
+/*    background-color: #777;*/
+    /*vertical-align: top;*/
+/*}*/
+
+.widget-livelist .widgetContainer{
+    vertical-align: top;
+    height: 100%;
     background-color: #777;
 }
+
+
+
+/*.widget-livelist #listDisplay {*/
+    /*background-color: #000;*/
+    /*display: inline-table;*/
+    /*position: relative;*/
+/*    height: 92%;*/
+    /*bottom: 0;*/
+    
+/*}*/
+
+.widget-livelist .viewContents{
+/*    background-color: #777;*/
+    /*position: relative;*/
+    /*height: 95%;*/
+    /*padding: 0;*/
+    /*bottom: 0;*/
+    top: 6%;
+/*    height: 92%;*/
+    /*transform: translate(0, -50%);*/
+    /*vertical-align: middle;*/
+    /*display: table;*/
+    /*vertical-align: middle*/
+}
+
+/*.widget-livelist .contents{*/
+    /*background-color: #000;*/
+/*    position: relative;*/
+    /*height: 95%;*/
+    /*padding: 0;*/
+    /*bottom: 10px;*/
+    /*height: 5%;*/
+/*    top: 3%;*/
+    /*height: 95%;*/
+    /*transform: translate(0, -50%);*/
+    /*vertical-align: middle;*/
+    /*display: table;*/
+    /*vertical-align: middle*/
+/*}*/
+
+.widget-livelist p{
+    /*background-color: #000;*/
+    /*position: relative;*/
+    /*top: 10%;*/
+    /*bottom: 2%; */
+    /*height: 5%;*/
+    /*transform: translate(0, -50%);*/
+    /*vertical-align: middle;*/
+    /*display: table;*/
+    /*vertical-align: middle*/
+}
+
+/*.widget-livelist #listDisplay h1{*/
+    /*background-color: #000;*/
+/*    position: relative;*/
+/*    vertical-align: middle;*/
+    /*top: 23%;*/
+/*}*/
+
+/*.widget-livelist #listDisplay ul{*/
+    /*background-color: #000;*/
+/*   position: relative;*/
+/*    vertical-align: middle;*/
+    /*bottom: 20px;*/
+/*}*/
 
 /* Color of the list title*/
 .widget-livelist h1 { 
@@ -34,7 +110,7 @@
 
 /* Item container */
 .widget-livelist li {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     background-color: #777;
 }
 
@@ -56,6 +132,19 @@
     /*font-weight: 600;*/
     /*color: rgba(255, 255, 255, 0.7);*/
 }
+.widget-livelist #itemCheckButton{
+    float: right;
+    /*margin-left: 12px;*/
+    /*font-weight: 600;*/
+    /*color: rgba(255, 255, 255, 0.7);*/
+}
+.widget-livelist #itemUncheckButton  {
+    float: right;
+    margin-left: 12px;
+    /*font-weight: 600;*/
+    /*color: rgba(255, 255, 255, 0.7);*/
+}
+
 
 /* Edit view input text color*/
 input, input:focus {
@@ -82,3 +171,83 @@ input, input:focus {
 /*    height: 50%;*/
 /*}*/
 
+/* This is for highlighting the list items in list and edit views*/
+.outlineElement {
+  outline: 1px solid #c00;
+}
+ 
+/*.outlineElementClicked {*/
+/*  outline: 1px solid #0c0;*/
+/*}*/
+
+
+
+
+
+
+
+/*.bigform-content {*/
+/*    border: solid 5px #DDD;*/
+/*    margin: 30px 20px;*/
+/*    overflow: hidden;*/
+/*    padding:20px;*/
+/*    position:relative;*/
+/*}*/
+/*.modal, .modal-backdrop {*/
+/*    position: absolute !important;*/
+/*}*/
+/*.bigform-content h1 {*/
+/*    margin:0;*/
+/*}*/
+/*.bigform-content input[type=submit] {*/
+/*    margin-top:10px;*/
+/*}*/
+
+/*.tag .active  {*/
+/*    background-color: #222222;*/
+/*}*/
+
+
+
+/*.widget-livelist { */
+/*    background-image: url("http://i.imgur.com/p3RyuCE.jpg?1");*/
+
+/*}*/
+
+
+/*.widget-livelist #tagDisplay {*/
+
+    /*vertical-align:top;*/
+/*    background-color: #d9534f;*/
+    
+/*}*/
+#tagDisplay{
+    width: 100%;
+    height: 5%;
+    margin-bottom:10px;
+    /*background-color: #000;*/
+}
+
+.tagColorSet {
+    float: left;
+    width: 74px;
+    height: 100%;
+}
+
+.tagColor {
+    float: left;
+    width: 74px;
+    height: 50%;
+}
+
+.HealthyTagColor{ background-color: #4cae4c; }
+.UnhealthyTagColor{ background-color: #d9534f; }
+.CheapTagColor{ background-color: #46b8da; }
+.ExpensiveTagColor{ background-color: #eea236; }
+.MealTagColor{ background-color: #2e6da4; }
+.UnsetColor{ background-color: #000; }
+
+
+.btn-listview{
+    background-color: #444;
+}
