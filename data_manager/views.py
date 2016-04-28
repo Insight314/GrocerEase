@@ -143,7 +143,7 @@ def index(request):
             
             
         responseText = "Post received: " #make sure this is compatable with SWIFT datatypes...
-        return json.dumps(responseText + DataSent)
+        return json.dumps(DataSent)
             
             
             
@@ -306,15 +306,6 @@ def delete_list(l_id):
     else:
         return 0
 
-#This makes a user leave the list
-def leave_list(user_name, l_id):
-    user_to_remove = User.objects.get(username = user_name)
-    tmp_l = lists.objects.get(list_id = l_id)
-    
-    tmp_l.list_users.remove(user_to_remove)
-
-
-
 #changes the list title to the passed in new list title
 def title_edit(l_id,new_title):
     tmp_l = lists.objects.get(list_id = l_id)
@@ -328,9 +319,10 @@ def title_edit(l_id,new_title):
  
 # #function that leaves a list for a particular user
 #"leave list" refers to removing an 'access' aka deleting, once all users have 'left' a list the list will be purged
-def leave_list(leaving_user, name_of_list):
+def leave_list(leaving_user, l_id):
+    print "in leaving list"
     user = User.objects.get(username = leaving_user)
-    list_to_leave = user.users_lists.get(list_name = name_of_list)
+    list_to_leave = user.users_lists.get(list_id = l_id)
     
     if not list_to_leave:
         return "The user is not a part of this list!"

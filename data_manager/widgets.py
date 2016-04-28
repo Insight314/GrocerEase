@@ -5,7 +5,7 @@ import json, models, views
 
 from django.http import HttpResponse
 from django.views.generic.detail import View
-
+from django.contrib.auth.models import User
 from dashing.widgets import JSONResponseMixin
 
 
@@ -551,12 +551,24 @@ class DashboardHelper(Widget):
                 except:
                     print "remove tag failed"
              
-        #Delete list if needed
+        #Delete list if needed, or leave it if you are not the list creator
         if leaveList:
-            if views.delete_list(listId) == 1:
-                dbAck = "Success"
+            print "leaving or deleting list"
+            tmp_u = User.objects.get(username = username)
+            
+            if models.lists.objects.get(list_id = listId).list_creator_id == tmp_u.id:
+                print "deleting the list"
+                if views.delete_list(listId) == 1:
+                    dbAck = "Success"
+                else:
+                    dbAck = "Fail"
             else:
-                dbAck = "Fail"
+                "removing the user"
+                if views.leave_list(username,listId) == 1:
+                    dbAck = "Success"
+                else:
+                    dbAck = "Fail"
+            
                 
         return self.packageListSettings(username, listId, "Success", "ListSettingsEdit")
 
