@@ -551,23 +551,23 @@ class DashboardHelper(Widget):
                 except:
                     print "remove tag failed"
              
-        #Delete list if needed, or leave it if you are not the list creator
-        if leaveList:
-            print "leaving or deleting list"
-            tmp_u = User.objects.get(username = username)
+        # #Delete list if needed, or leave it if you are not the list creator
+        # if leaveList:
+        #     print "leaving or deleting list"
+        #     tmp_u = User.objects.get(username = username)
             
-            if models.lists.objects.get(list_id = listId).list_creator_id == tmp_u.id:
-                print "deleting the list"
-                if views.delete_list(listId) == 1:
-                    dbAck = "Success"
-                else:
-                    dbAck = "Fail"
-            else:
-                "removing the user"
-                if views.leave_list(username,listId) == 1:
-                    dbAck = "Success"
-                else:
-                    dbAck = "Fail"
+        #     if models.lists.objects.get(list_id = listId).list_creator_id == tmp_u.id:
+        #         print "deleting the list"
+        #         if views.delete_list(listId) == 1:
+        #             dbAck = "Success"
+        #         else:
+        #             dbAck = "Fail"
+        #     else:
+        #         "removing the user"
+        #         if views.leave_list(username,listId) == 1:
+        #             dbAck = "Success"
+        #         else:
+        #             dbAck = "Fail"
             
                 
         return self.packageListSettings(username, listId, "Success", "ListSettingsEdit")

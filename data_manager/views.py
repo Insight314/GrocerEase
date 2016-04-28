@@ -143,7 +143,7 @@ def index(request):
             
             
         responseText = "Post received: " #make sure this is compatable with SWIFT datatypes...
-        return json.dumps(DataSent)
+        return HttpResponse(json.dumps(DataSent))
             
             
             
@@ -399,7 +399,7 @@ def get_list_items(user_list):
     
     if not list_items:
         print "The list has no items!"
-        return 
+        return list_items
     
     else:
         # print list_items
