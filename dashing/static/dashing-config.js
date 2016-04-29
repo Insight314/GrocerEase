@@ -371,8 +371,21 @@ function extractTags(response, listIndex){
 function addLiveList(list_id, list_name, num_items, list_items, list_users, list_tags){
     
     var numRows = 1;
-    if(num_items > 4){
-        numRows = 2;
+    if(num_items < 5){
+        numRows = 1;
+    }
+    else {
+        if(num_items < 12)
+            numRows = 2;
+        else {
+            if(num_items < 20)
+                numRows = 3;
+            else{
+                if(num_items < 28)
+                    numRows = 4;
+                
+            }
+        }
     }
 
     dashboard.addWidget('LiveListWidget' , 'LiveList', {
@@ -739,7 +752,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             var widget = $("#widget"+id).parent();
                             console.log(widget);
                             
-                            $(".gridster ul").data('gridster').resize_widget(widget,1,2);
+                            var newWidgetSize = self.row + 1;
+                            $(".gridster ul").data('gridster').resize_widget(widget,1,newWidgetSize);
                             
                             
                             // Show the edit items
@@ -811,6 +825,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             return;
                         }
                     });
+                    
                     $("#settingsButton"+id).click(function(){
                         if(self.isEditingSettings === false){
                             // console.log("Open settings button pressed...");
@@ -819,7 +834,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             var widget = $("#widget"+id).parent();
                             console.log(widget);
                             
-                            $(".gridster ul").data('gridster').resize_widget(widget,1,2);
+                            var newWidgetSize = self.row + 1;
+                            $(".gridster ul").data('gridster').resize_widget(widget,1,newWidgetSize);
                             
                             
                             
@@ -907,6 +923,10 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             if(isChecked == "False"){
                                 $(this).find("#itemCheckButton").show();
                                 $(this).find("#itemUncheckButton").hide();
+                                
+                                $(this).find("#itemCheckButton").removeClass('shrink');
+                                
+
                                 $(this).find(".quantity").hide();
                             }
                             else{
@@ -922,7 +942,10 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                         // Mouse exit
                         function(){
                             $(this).find("#itemUncheckButton").hide();
+                            
                             $(this).find("#itemCheckButton").hide();
+                            $(this).find("#itemCheckButton").addClass('shrink');
+
                             $(this).find(".quantity").show();
                             
                             // Outline
@@ -930,34 +953,40 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                         }
                     );
                     
-                    // // Check item
-                    // $("#listView"+id+" #checkItemButton").click(function(){
-                    //     if(self.isRemovingItem === false){
-                               
+                    // Check item
+                    $("#listView"+id+" #checkButton").click(function(){
                         
-                    //         // Get the item id from the editItem id
-                    //         var itemToRemoveId = $(this).parent().parent().find(".itemID").text();
+                        // console.log("Item was checked");
+                        var listItem = $(this).parent().parent().parent().parent();
+                        // console.log(listItem);
+                        
+                        listItem.addClass("checkedItem");
+                        
+                        // if(self.isRemovingItem === false){
+                        //   self.isRemovingItem = true; 
+                        
+                        //     // Get the item id from the editItem id
+                        //     var itemToRemoveId = $(this).parent().parent().find(".itemID").text();
                             
-                    //         // Get the element object to hide. Save or cancel do what is needed after element is no longer visible
-                    //         var itemElementToRemove = $(this).parent().parent().parent();
+                        //     // Get the element object to hide. Save or cancel do what is needed after element is no longer visible
+                        //     var itemElementToRemove = $(this).parent().parent().parent();
                             
-                    //         // console.log(itemToRemoveId[0]);
-                    //         // console.log([itemToRemoveId]);
-                    //         // If we don't already have this index
-                    //         if(itemToRemoveId && !self.deletedItemIndexes.contains(itemToRemoveId)){
-                    //             self.isRemovingItem = true; 
-                    //             console.log("Removing item");
-                    //             self.deletedItemIndexes.push(itemToRemoveId);
-                    //             self.deletedItemIndexesString += itemToRemoveId +",";
+                        //     // console.log(itemToRemoveId[0]);
+                        //     // console.log([itemToRemoveId]);
+                        //     // If we don't already have this index
+                        //     if(itemToRemoveId && !self.deletedItemIndexes.contains(itemToRemoveId)){
+                        //         console.log("Removing item");
+                        //         self.deletedItemIndexes.push(itemToRemoveId);
+                        //         self.deletedItemIndexesString += itemToRemoveId +",";
                                 
-                    //             // TODO - place these in a container to hide them now, show if we cancel, and remove if we save
-                    //             itemElementToRemove.hide();
-                    //             // itemElementToRemove.remove();
+                        //         // TODO - place these in a container to hide them now, show if we cancel, and remove if we save
+                        //         itemElementToRemove.hide();
+                        //         // itemElementToRemove.remove();
                                 
-                    //             self.isRemovingItem = false;
-                    //         }
-                    //     }
-                    // });
+                        //         self.isRemovingItem = false;
+                        //     }
+                        // }
+                    });
                     
                     
                     
@@ -1073,11 +1102,18 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                     // widget.attr('data-sizey', 1);
                                     $(".gridster ul").data('gridster').resize_widget(widget,1,1);
                                 }
-                                else{
+                                else if(self.itemCount < 12){
                                     // widget.attr('data-sizey', 2);
                                     $(".gridster ul").data('gridster').resize_widget(widget,1,2);
                                 }
-                                
+                                else if(self.itemCount < 20){
+                                    // widget.attr('data-sizey', 2);
+                                    $(".gridster ul").data('gridster').resize_widget(widget,1,3);
+                                }
+                                else if(self.itemCount < 28){
+                                    // widget.attr('data-sizey', 2);
+                                    $(".gridster ul").data('gridster').resize_widget(widget,1,4);
+                                }
                                 
                                 
                                 
@@ -1143,14 +1179,13 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             var widget = $("#widget"+id).parent();
                             console.log(widget);
                             
-                            if(self.itemCount < 5){
-                                // widget.attr('data-sizey', 1);
-                                $(".gridster ul").data('gridster').resize_widget(widget,1,1);
-                            }
-                            else{
-                                // widget.attr('data-sizey', 2);
-                                $(".gridster ul").data('gridster').resize_widget(widget,1,2);
-                            }
+                            // Get the entire widget html and change size                        
+                            var widget = $("#widget"+id).parent();
+                            console.log(widget);
+                            
+                            // Remove etra space from edit view
+                            var newWidgetSize = self.row;
+                            $(".gridster ul").data('gridster').resize_widget(widget,1,newWidgetSize);
                             
                             
                             self.isEditingList = false;
@@ -1504,14 +1539,9 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                 var widget = $("#widget"+id).parent();
                                 console.log(widget);
                                 
-                                if(self.itemCount < 5){
-                                    // widget.attr('data-sizey', 1);
-                                    $(".gridster ul").data('gridster').resize_widget(widget,1,1);
-                                }
-                                else{
-                                    // widget.attr('data-sizey', 2);
-                                    $(".gridster ul").data('gridster').resize_widget(widget,1,2);
-                                }
+                                // Remove etra space from settings view
+                                var newWidgetSize = self.row;
+                                $(".gridster ul").data('gridster').resize_widget(widget,1,newWidgetSize);
                             });
                             
                             $("#settingsView"+id).hide();
@@ -1532,15 +1562,9 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             var widget = $("#widget"+id).parent();
                             console.log(widget);
                             
-                            if(self.itemCount < 5){
-                                // widget.attr('data-sizey', 1);
-                                $(".gridster ul").data('gridster').resize_widget(widget,1,1);
-                            }
-                            else{
-                                // widget.attr('data-sizey', 2);
-                                $(".gridster ul").data('gridster').resize_widget(widget,1,2);
-                            }
-                            
+                            // Remove etra space from settings view
+                            var newWidgetSize = self.row;
+                            $(".gridster ul").data('gridster').resize_widget(widget,1,newWidgetSize);
                         }
                     });
                     

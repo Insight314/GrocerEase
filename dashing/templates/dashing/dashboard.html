@@ -32,7 +32,7 @@
           <li>
                 <a href="{% url 'auth_logout' %}">Logout</a></li>
           </ul>
-         <a href="#" class="brand-logo center">GrocerEase</a></div>
+         <p class="brand-logo center">GrocerEase</p></div>
     </nav>
     </div>
 {% endblock %}
@@ -40,23 +40,7 @@
 
 <!-- Menu Modals-->
 {% block modals %}
-    <!-- These are the popup menus accessible via the menu bar -->
-    <div id="openDashboardFilters" class="modalDialog">
-    	<div>
-    		<h3>Dashboard Filters</h3>
-    		<p>Dashboard filters go here</p>
-    		<a href="#close" type="button" class="btn btn-block btn-danger">Close</a>
-    	</div>
-    </div>
-    <div id="openSettings" class="modalDialog">
-    	<div>
-    		<h3>Settings</h3>
-    		<p>Settings go here</p>
-    		<a href="#close" type="button" class="btn btn-block btn-danger">Close</a>
-    	</div>
-    </div>
-    
-    <!-- Add new list modal-->
+    <!-- Add new list modal, accessible via dashboard floating plus -->
     <div id="addNewList" class="modalDialog">
     	<div class="addNewListContainer">
     		<h3 id='addListName'>New List</h3>
@@ -81,34 +65,7 @@
     		</div>
     	</div>
     </div>
-    
-    
-    
-    
-    <!-- Tag Settings modal-->
-    <!--<div id="editTagsModal" class="modalDialog">-->
-    <!--	<div class="editTagsContainer">-->
-    <!--		<h3 id='editTagsTitle'>Edit Tags</h3>-->
-    		
-    <!--		<div id="editTagsWrapper">-->
-    <!--      <div class="input-group">-->
-    <!--        <span class="input-group-addon">-->
-    <!--          <input type="checkbox" aria-label="Checkbox for following text input">-->
-    <!--        </span>-->
-    <!--        <input type="text" class="form-control" aria-label="Text input with checkbox">-->
-    <!--      </div>-->
-    <!--    </div>-->
-        
-    <!--    <div class="saveTagsButtonWrapper">-->
-    <!--    		<a id="saveTagsButton" href="#" role="button" class="btn btn-block btn-success">Save</a>-->
-    <!--		</div>-->
-    <!--		<div>-->
-    <!--    		<a id='cancelEditTagsButton' href="#close" role="button" class="btn btn-block btn-danger">Cancel</a>-->
-    <!--		</div>-->
-    <!--	</div>-->
-    <!--</div>-->
-    
-    
+
 {% endblock %}
 
 

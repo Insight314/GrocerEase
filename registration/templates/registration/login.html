@@ -2,11 +2,13 @@
 
 
 {% load i18n %}
+{% load slogans %}
 
 {% block pagename %}{% trans "Log In" %}{% endblock %}
 
 {% block content %}
 <div class="login-page">
+    <div class = "center-align"><h2 class="white-text" >GrocerEase</h2><h4 class="white-text" >{% makePhrase %}</h4></div>
     <div class="form">
 <form method="post" action="">
     {% csrf_token %}

@@ -72,7 +72,8 @@ class RegistrationView(FormView):
         Use the new user when constructing success_url.
 
         """
-        return super(RegistrationView, self).get_success_url()
+        # return super(RegistrationView, self).get_success_url()
+        return "/"
 
 
 class ActivationView(TemplateView):

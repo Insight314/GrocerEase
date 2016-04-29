@@ -110,6 +110,7 @@
 
 /* Item container */
 .widget-livelist li {
+    width: 100%;
     margin-bottom: 10px;
     background-color: #777;
 }
@@ -120,6 +121,12 @@
     list-style: none;
 }
 
+
+.itemContainer .input-group{
+    width:100%;
+    /*margin-right: 10%;*/
+}
+
 /* Color of each item */
 .widget-livelist .itemLabel {
     color: rgba(255, 255, 255, 0.7);
@@ -128,23 +135,36 @@
  /* Items quantity */
 .widget-livelist .quantity {
     float: right;
-    margin-left: 12px;
+    /*margin-left: 12px;*/
+    /*width:%;*/
+    
     /*font-weight: 600;*/
     /*color: rgba(255, 255, 255, 0.7);*/
 }
+
+.widget-livelist .item{
+    width: 70%;
+}
+
 .widget-livelist #itemCheckButton{
     float: right;
-    /*margin-left: 12px;*/
+    margin-right: 25px;
     /*font-weight: 600;*/
     /*color: rgba(255, 255, 255, 0.7);*/
 }
 .widget-livelist #itemUncheckButton  {
     float: right;
-    margin-left: 12px;
+    /*margin-left: 12px;*/
     /*font-weight: 600;*/
     /*color: rgba(255, 255, 255, 0.7);*/
 }
-
+/*.widget-livelist .quantity  {*/
+/*    float: right;*/
+/*    width: 35%;*/
+    /*margin-left: 12px;*/
+    /*font-weight: 600;*/
+    /*color: rgba(255, 255, 255, 0.7);*/
+/*}*/
 
 /* Edit view input text color*/
 input, input:focus {
@@ -172,9 +192,9 @@ input, input:focus {
 /*}*/
 
 /* This is for highlighting the list items in list and edit views*/
-.outlineElement {
-  outline: 1px solid #c00;
-}
+/*.outlineElement {*/
+/*  outline: 1px solid #c00;*/
+/*}*/
  
 /*.outlineElementClicked {*/
 /*  outline: 1px solid #0c0;*/
@@ -248,6 +268,15 @@ input, input:focus {
 .UnsetColor{ background-color: #000; }
 
 
+.checkedItem{
+    color: rgba(0, 0, 0, 0.3);
+}
+
+
 .btn-listview{
     background-color: #444;
+}
+
+.shrink{
+    width: 0;
 }

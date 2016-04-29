@@ -301,7 +301,7 @@ class DashboardHelper(Widget):
             if split_item[0] == '-1':
                 try:
                     print "creating item"
-                    if views.create_item(username,list_id,split_item[1],'','') == 1:
+                    if views.create_item(username,list_id,split_item[1],'details','quantity') == 1:
                         dbAck = "Success"    
                     else:
                         print "Item creation failed"
@@ -348,7 +348,13 @@ class DashboardHelper(Widget):
             
             for ids in items_to_be_modified:
                 if split_item[0] == ids:
-                    if views.edit_item(split_item[0],split_item[1],'','',0) == 1:
+                    print "split_item at 0: "
+                    print split_item[0]
+                    print "split_item at 1: "
+                    print split_item[1]
+                    print "Attempting to edit item"
+                    
+                    if views.edit_item(username,list_id,split_item[0],split_item[1],'','',0) == 1:
                         dbAck = "Success"
                     else:
                         dbAck = "Fail"
@@ -379,7 +385,7 @@ class DashboardHelper(Widget):
             listId = str(request.GET.__getitem__('listID'))
             print listId
         except:
-            print "Edit requesst did not have listID"
+            print "Edit request did not have listID"
             
         # Get the user's usernames that are associated with the list (.split() with comma)
         users = str(request.GET.__getitem__('listUsers'))
@@ -406,45 +412,15 @@ class DashboardHelper(Widget):
                 # # Get the lists tags, NOTE: same format as items [id,tag_name], also split the same way 
                 # tags = str(request.GET.__getitem__('listTags'))
                 # print tags
-        
-        
-        
-        # Settings attributes notes
 
-        #   In the request, you are receiving a CSV list of usernames.
-        #   I know you were prepared for ID but it since usernames could be a primary key
-        #       thanks to the registration part of the website that handles unique usernames
-        #   listUsers: all users at the time of save (what the DB should have after updating)
-        #   listUsersAdded: all users not currently associated with this list
-        #   listUsersRemoved: all users that are removed from sharing list
-        #   ********** It is quite probable that I will include the "Leave list" functionality here
-        #               since all we need is the current list viewer (username) to be in the 
-        #               listUsersRemoved to remove him.
-        
-        #   In the request, you will also receive a list of tags.
-        #   Since we are running out of time fast, I have made a selection of tags
-        #       that users can select from. This gives me only 5-6 tags I have to deal with.
-        #   If you have any complaints about this, sorry but I'm not sorry,
-        #       bc this will save me from having to worry about too many colors for tags,
-        #       custom tag entry, and color selection for each. Lot of time I don't have.
-        #   So, since Chris is pulling directly from the DB, if we only add the specified 
-        #       tags to the tags table and then just update the fK for each list when you get and
-        #       update from me. Man, after that long winded though I just wrote, the structs I've made for
-        #       you aboove are:
-        #   listTags: all tags at the time of save (what the DB should have after updating)
-        #   listTagsAdded: all tags added and not currently associated with this list
-        #   listTagsRemoved: all tags that are removed from list        
-        #       *Again, tags are tag names not ids, in csv but we will only have a specified amount and each unique
-        
-        #   Preset tags: (IDs dont matter so you can set accordingly, I only need tag name)
-        #       Healthy, Unhealthy, Cheap, Expensive, Meal
-        
-        
 
-     
-        # TODO
-        #   We need to test adding and removing users and shit when we are both ready
-        
+        #HOW TO COPY LISTS
+        '''Deep copy the list that needs to be copied
+           grab the items from the original list
+           copy the items and connect them to the newly copied list
+        '''
+
+
         #Should be able to split tags the same way we split items
         split_tags = tags.split(',')
         print "tags given to me: "
@@ -532,6 +508,7 @@ class DashboardHelper(Widget):
                 try:
                     print "trying to add a tag"
                     if views.add_tag(listId,str(tag)) == 1:
+                        print "Add tag success"
                         dbAck = "Success"
                     else:
                         print "add tag failed"
@@ -552,22 +529,13 @@ class DashboardHelper(Widget):
                     print "remove tag failed"
              
         # #Delete list if needed, or leave it if you are not the list creator
-        # if leaveList:
-        #     print "leaving or deleting list"
-        #     tmp_u = User.objects.get(username = username)
-            
-        #     if models.lists.objects.get(list_id = listId).list_creator_id == tmp_u.id:
-        #         print "deleting the list"
-        #         if views.delete_list(listId) == 1:
-        #             dbAck = "Success"
-        #         else:
-        #             dbAck = "Fail"
-        #     else:
-        #         "removing the user"
-        #         if views.leave_list(username,listId) == 1:
-        #             dbAck = "Success"
-        #         else:
-        #             dbAck = "Fail"
+        if leaveList == "true":
+           print "deleting list"
+        
+           if views.delete_list(listId,username) == 1:
+                dbAck = "Success"
+           else:
+                dbAck = "Fail"
             
                 
         return self.packageListSettings(username, listId, "Success", "ListSettingsEdit")
@@ -769,6 +737,7 @@ class DashboardHelper(Widget):
                 'list_items_checkedStatus': list_items_checkedStatus,
             }   
         else:
+            print "DB threw fail for previous request"
             return {
                 'Ack': dbAck,
                 'keyword': keyword,

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% load static from staticfiles %}
 {% load dashing_tags %}
+{% load slogans %}
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -8,7 +9,7 @@
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title>{% block title %}Dashboard{% endblock %}</title>
+    <title>{% block title %}GrocerEase: {% makePhrase %}{% endblock %}</title>
     
     <script type="text/javascript">var username = "{{ user.username }}"; var userid = "{{ user.id }}";//here's the fucking magic</script>
     <!-- Make added CSS smaller -->

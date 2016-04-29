@@ -1,6 +1,7 @@
  {% load static from staticfiles %}
 
 {% load i18n %}
+{% load slogans %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -12,7 +13,8 @@
     <link rel="icon" href="">
 
 {% block title %}
-    <title>{% block pagename %}Default Template{% endblock %} | GrocerEase</title>
+    <title>{% block pagename %}Default Template{% endblock %} | GrocerEase: {% makePhrase %}</title>
+    <!--Leaving auth pages as-is, as the title is useful, plus auth pages already have slogans in the page! The Dashboard will have slogans in tab text, though-->
 {% endblock %}
     <!-- Bootstrap core CSS -->
     <!--<link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">-->
@@ -35,12 +37,18 @@
 
 
 {% block stylesheets %}
+<link type="text/css" rel="stylesheet" href="{% static 'css/materialize/css/materialize.min.css' %}"  media="screen,projection"/>
+
+      <!--Let browser know website is optimized for mobile-->
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="stylesheet" href="{% static 'css/signin.css' %}">
 {% endblock %}
     
     
   </head>
   <body>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="{% static 'css/materialize/js/materialize.min.js' %}"></script>
     <div class="container">
 
       {% block body_block %}{% endblock %}{% block content %}

@@ -14,6 +14,7 @@ from django.contrib.auth.hashers import make_password
 import json #for intaking chris-formation
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
+from slogans import makePhrase
 
 
 # Index View
@@ -193,7 +194,7 @@ def index(request):
 
 def gen(request):
     #major debug page
-    context = {'productCount': products.objects.count(), 'listCount': lists.objects.count(), 'itemCount': items.objects.count(), 'mylists': lists.objects.filter(list_creator_id = request.user.id).count()}
+    context = {'productCount': products.objects.count(), 'listCount': lists.objects.count(), 'itemCount': items.objects.count(), 'mylists': lists.objects.filter(list_creator_id = request.user.id).count(), 'phrase':makePhrase()}
     users = []
     for u in User.objects.all():
         users.append((u.username,u.id))
@@ -215,14 +216,6 @@ def gen(request):
 #---------------------------------------------------------------------------------------
 #------------------------------------Debugging et al------------------------------------
 #---------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
 
 
 #############
@@ -290,21 +283,29 @@ def create_list(user_name, new_list_name):
             print e
     
 #this deletes a users list
-def delete_list(l_id):
+def delete_list(l_id,user_name):
     print "Delete list called"
     list_to_delete = lists.objects.get(list_id = l_id)
     
-    #must both disassociate all users from the list and delete all of the list's items
-    list_to_delete.list_users.clear()
-    list_items = get_list_items(list_to_delete)
-    
-    for i in list_items:
-        remove_item(i.item_id)
-        
-    if list_to_delete.delete():
-        return 1
+    #simply remove the user from the list if it is not the creator
+    if user_name != User.objects.get(id = list_to_delete.list_creator_id).username:
+        print "Removing the user from the list, not deleting the list"
+        if leave_list(user_name,l_id) == 1:
+            return 1
+        else:
+            return 0
     else:
-        return 0
+        #must both disassociate all users from the list and delete all of the list's items
+        list_to_delete.list_users.clear()
+        list_items = get_list_items(list_to_delete)
+    
+        for i in list_items:
+            remove_item(i.item_id)
+        
+        if list_to_delete.delete():
+            return 1
+        else:
+            return 0
 
 #changes the list title to the passed in new list title
 def title_edit(l_id,new_title):
@@ -407,6 +408,10 @@ def get_list_items(user_list):
          
 #function that creates an item for a user's list
 def create_item(user_name, c_list_id, new_item_name, details, quantity):
+    print "these are the details: "
+    print details
+    print "this is the qauntity: "
+    print quantity
     print "in item creation"
     user = User.objects.get(username = user_name)
     print "got user"
@@ -433,22 +438,29 @@ def remove_item(i): #i is id or whatever
         return 0
 
 #edits the attributes of an item
-def edit_item(i_id,new_name,new_quantity,new_details,new_checked_status):
-    tmp_item = items.objects.get(item_id = i_id)
-    
-    if new_name:
-        tmp_item.item_name = new_name
-    elif new_quantity:
-        tmp_item.item_quantity = new_quantity
-    elif new_details:
-        tmp_item.item_details = new_details
-    elif new_checked_status:
-        tmp_item.checked_status = new_checked_status
-
-    if tmp_item.item_name == new_name and tmp_item.item_quantity == new_quantity and tmp_item.item_details == new_details and tmp_item.checked_status == new_checked_status:
+def edit_item(user_name,l_id, i_id,new_name,new_quantity,new_details,new_checked_status):
+    if i_id == str(-1):
+        print "Not editing this item"
         return 1
     else:
-        return 0
+        tmp_item = items.objects.get(item_id = i_id)
+    
+        if new_name:
+            tmp_item.item_name = new_name
+            tmp_item.save()
+        elif new_quantity:
+            tmp_item.item_quantity = new_quantity
+            tmp_item.save()
+        elif new_details:
+            tmp_item.item_details = new_details
+            tmp_item.save()
+        elif new_checked_status:
+            tmp_item.checked_status = new_checked_status
+            tmp_item.save()
+        if tmp_item.item_name == new_name and tmp_item.item_quantity == new_quantity and tmp_item.item_details == new_details and tmp_item.checked_status == new_checked_status:
+            return 1
+        else:
+            return 0
         
 #------Tag operations-----------------------------------------------------------
 #function that retieves a list's tags
@@ -471,6 +483,7 @@ def add_tag(l_id,t):
             return 1
         else:
             return 0
+            
 #remove a tag from a specific list
 def remove_tag(l_id, t):
     tmp_l = lists.objects.get(list_id = l_id)
@@ -497,6 +510,3 @@ def get_stores_products(name_of_store):
         
     else:
         return stores_products
-        
-#function that makes a newly entered item a product
-#honestly not sure how this is gonna be done...can worry about later
