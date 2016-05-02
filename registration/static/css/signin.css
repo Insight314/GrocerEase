@@ -107,7 +107,10 @@ body {
   background: -moz-linear-gradient(right, #222222, #222222);
   background: -o-linear-gradient(right, #222222, #222222);
   background: linear-gradient(to left, #222222, #222222);
-  background-image: url("groce.jpg");
+  /*background-image: url("groce.jpg");*/
+  /*background-repeat: no-repeat;*/
+  /*background-position: center top;*/
+  /*background-attachment: fixed;*/
  
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
