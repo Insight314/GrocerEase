@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.views.generic.detail import View
 from django.contrib.auth.models import User
 from dashing.widgets import JSONResponseMixin
-
+from data_manager.models import items
 
 
 # Base Widget class
@@ -256,8 +256,8 @@ class DashboardHelper(Widget):
         
         # TODO 
         # These need to be placed in the request from the front end
-        list_items_quantity=""
-        list_items_details=""
+        list_items_quantity= str(request.GET.__getitem__('listItemsQuantity'))
+        list_items_details= str(request.GET.__getitem__('listItemsDetails'))
         list_items_checked_status = ""
         
         print "These are the list_items: "
@@ -274,8 +274,15 @@ class DashboardHelper(Widget):
         
         #split up the list items
         split_items = list_items.split('|')
+        split_quantities = list_items_quantity.split('|')
+        split_details = list_items_details.split('|')
+        
         print "Split items: "
         print split_items
+        print "Split quantities: "
+        print split_quantities
+        print "Split details"
+        print split_details
         
         # Set initially as fail 
         dbAck = "Fail"
@@ -341,6 +348,27 @@ class DashboardHelper(Widget):
         print "these are the items to modify: "
         print items_to_be_modified
         
+        
+        #Determine which details and quantities to modify
+        split_quantity_ids = []
+        for q in split_quantities:
+            split_quantity = q.split(',')
+            split_quantity_ids.append(split_quantity[0])
+            
+        quantities_to_modify = set(items_to_be_modified).intersection(split_quantity_ids)
+        print "These are the quantities to modify: "
+        print quantities_to_modify
+        
+        split_details_ids = []
+        for d in split_details:
+            split_detail = d.split(',')
+            split_details_ids.append(split_detail[0])
+            
+        details_to_modify = set(items_to_be_modified).intersection(split_details_ids)
+        print "These are the details to modify: "
+        print details_to_modify
+            
+        
         #edit the item 
         for item in split_items:
             print "editing the items"
@@ -354,12 +382,32 @@ class DashboardHelper(Widget):
                     print split_item[1]
                     print "Attempting to edit item"
                     
-                    if views.edit_item(username,list_id,split_item[0],split_item[1],'','',0) == 1:
+                    for q_id in quantities_to_modify:
+                        if split_item[0] == q_id:
+                            for q in split_quantities:
+                                if q != '':
+                                    split_quantity = q.split(',')
+                                    if split_quantity[0] == split_item[0]:
+                                        split_item.append(split_quantity[1])
+                                
+                    for d_id in details_to_modify:
+                        if split_item[0] == d_id:
+                            for d in split_details:
+                                if d != '':
+                                    split_detail = d.split(',')
+                                    if split_detail[0] == split_item[0]:
+                                        split_item.append(split_detail[1])
+                                
+                    print "here is the item that is going to be edited: "
+                    print split_item
+                    
+                    
+                    if views.edit_item(username,list_id,split_item[0],split_item[1],split_item[2],split_item[3],0) == 1:
                         dbAck = "Success"
                     else:
                         dbAck = "Fail"
-        
-    
+         
+         
         print "Packaging edit list ack"
     
         return self.packageListDetails(username, list_id, dbAck, "ListDetailsEdit")
@@ -545,20 +593,15 @@ class DashboardHelper(Widget):
     # Process sync requests
     def processSyncRequest(self, request):
         # Get the username
-        username = str(request.GET.__getitem__('timestamp'))
+        username = str(request.GET.__getitem__('username'))
         print username
         # Get the listId
         listId = str(request.GET.__getitem__('listID'))
         print listId
-        # Get the timestamp for last update
-        timestamp = str(request.GET.__getitem__('timestamp'))
-        print timestamp
-        
-        # TODO 
-        # Correct format:
-        # 2016-04-12 03:05:10+00:00
-        formattedTimestamp = self.convertTimestamp(timestamp);
-        print formattedTimestamp
+        # Get the checkedStatus for last update
+        checkedStatus = str(request.GET.__getitem__('listItemsCheckedStatus'))
+        print checkedStatus
+ 
         
         # Used to flag client that no new info was sent
         #   Since default return from this, processSyncRequest, is no info,
@@ -566,34 +609,33 @@ class DashboardHelper(Widget):
         dbAck = "Fail" # DB ack - Was DB update successful? ("Success/Fail")
         
         
-        # TODO
-        # If the timestamp given is less than latest db update, they need to be updated
-        if(0):
-            tmp_ts = views.get_timestamp(listId)
-            #if something something compare things:
-                #update things
-                
-                
-            
-            # Abel I need your timestamp compare stuff here and also please
-            #   populate the dbAck var
-            
-            
-            # Maybe if we do if the timestamp I send you is more than some
-            #   time limit, then we update. Having this threshold rather than an
-            #   explicit value the timestamp should be makes the front end 
-            #   sync timing easier.
-            
-            
-            
-            print "Packaging sync ack"
-            return self.packageListDetails(username, listId, dbAck, "Sync")
-            
-            
-        # If they have the latest info, server doesn't want to waste time
-        else:
-            return { 'Ack': dbAck, 'keyword': "Sync" }  
+        checkedStatus = checkedStatus[0:len(checkedStatus) - 1]
+        print checkedStatus
         
+        split_status = []
+        split_status = checkedStatus.split(',')
+        print "split_status: "
+        print split_status
+            
+        tmp_i = items.objects.get(item_id = int(split_status[0]))
+        tmp_i.checked_status = int(split_status[1])
+        tmp_i.save()
+            
+        if tmp_i.checked_status == int(split_status[1]):
+            dbAck = "Success"
+        else:
+            dbAck = "Fail"
+        
+        
+    
+        print "Packaging sync ack"
+        return { 'Ack': dbAck, 'keyword': "Sync" }
+
+        # # TODO 
+        # # Correct format:
+        # # 2016-04-12 03:05:10+00:00
+        # formattedTimestamp = self.convertTimestamp(timestamp);
+        # print formattedTimestamp
         
         
     # Process the add list requests

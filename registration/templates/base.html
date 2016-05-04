@@ -37,7 +37,7 @@
 
 
 {% block stylesheets %}
-<link type="text/css" rel="stylesheet" href="{% static 'css/materialize/css/materialize.min.css' %}"  media="screen,projection"/>
+<!--<link type="text/css" rel="stylesheet" href="{% static 'css/materialize/css/materialize.min.css' %}"  media="screen,projection"/>-->
 
       <!--Let browser know website is optimized for mobile-->
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -47,12 +47,17 @@
     
   </head>
   <body>
+    
+    <img src="{% static 'LeftBar.jpg' %}" style="float:left">
+    <img src="{% static 'RightBar.jpg' %}" style="float:right">
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="{% static 'css/materialize/js/materialize.min.js' %}"></script>
-    <div class="container">
+    
 
       {% block body_block %}{% endblock %}{% block content %}
+      <div class = "center-align"><h2 class="white-text" >GrocerEase</h2><h4 class="white-text" >{% makePhrase %}</h4></div>
       <div class="form">
+        
             {% block message %}Default Template!{% endblock %}
         </div>
 <!-- Broke the line below to avoid reset password zone....-->
@@ -60,9 +65,9 @@
 
 
 {% endblock %}
-{% block homelink %} <p class ="other-text">{% trans "Ready to leave?" %} <a href="{% url 'dashboard' %}">{% trans "Return Home" %}</a>.</p> {% endblock %}
+{% block homelink %} <p class ="other-text center-align">{% trans "Ready to leave?" %} <a href="{% url 'dashboard' %}">{% trans "Return Home" %}</a>.</p> {% endblock %}
 
-    </div> <!-- /container -->
+    <!-- /container -->
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <!--<script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>-->
   </body>

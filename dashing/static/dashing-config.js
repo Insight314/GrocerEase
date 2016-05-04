@@ -22,10 +22,10 @@ var numDashboardWidgets = 0;
 // For list tags
 var possibleTags = new Array();
 possibleTags.push("Healthy");
-possibleTags.push("Unhealthy");
+possibleTags.push("Favorite");
 possibleTags.push("Cheap");
 possibleTags.push("Expensive");
-possibleTags.push("Meal");
+possibleTags.push("Recipe");
 
 var globalFlag = false;
 
@@ -58,8 +58,7 @@ function processResponse(widget, response){
             
             // If sync receives a failure ack
             if(keyword == "Sync"){
-                widget.isSyncing = false;
-                console.log("Sync command did not require update");
+                console.log("List sync failure");
             }
             
             // Typical case
@@ -200,9 +199,10 @@ function processResponse(widget, response){
                 // Sync response processing
                 //  If we are here, then db must have sent info so update the widget
                 if(keyword == "Sync"){
-                    widget.list_id = current_list_id;
-                    widget.isSyncing = false;
-                    return [current_list_name, getTimestamp(), itemsFormatted];
+                    // If sync receives a failure ack
+                    if(keyword == "Sync"){
+                        console.log("List sync success");
+                    }
                 }
             }
         }
@@ -225,12 +225,7 @@ function processResponse(widget, response){
                 
             }
         }
-        
-        
-        // Sync response processing (List details and settings)
-        if(keyword == "Sync"){
-            
-        }
+
         
     }
     else{
@@ -402,6 +397,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
         // awaitingAddList: isPseudoAddList,
         isEditingTitle: false,
         isRemovingItem: false,
+        isEditingItemDetails: false,
+        
         isSyncing: false,
         isOutOfDate: true,
         isInitialized: false,
@@ -410,6 +407,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
         isEditingUsers: false,
         
         leaveList: false,
+        syncLock: false,
 
         // Configure the widget's unique attributes based upon list details
         //  This calls configureWidget for every LiveListWidget instance
@@ -498,8 +496,11 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                     // console.log(this.items_checkedStatus);
                     
                     
-                    // Holds the item labels at the time of save 
+                    // Hold the item attributes at the time of save 
                     this.itemsString = "";
+                    this.itemsQuantityString = "";
+                    this.itemsDetailsString = "";
+                    this.itemsCheckedStatusString = "";
                     
                     // Items that get modified during list edit 
                     this.modifiedItemIndexes = [];
@@ -607,11 +608,13 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                 var tagName = possibleTags[i];
                                 var tagAlertElement = $("#widget" + id + " #tagDisplay #" + tagName + "TagAlert");
                                 tagAlertElement.attr('class', "tagColor UnsetColor");
+                                tagAlertElement.find(".glyphicon").hide();
                             }
                             else{
                                 var tagName = possibleTags[i];
                                 var tagAlertElement = $("#widget" + id + " #tagDisplay #" + tagName + "TagAlert");
                                 tagAlertElement.attr('class', "tagColorSet " + tagName + "TagColor");
+                                tagAlertElement.find(".glyphicon").show();
                             }
                         }
                         
@@ -632,32 +635,32 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
         //  isn't currently doing something.
         
         // Occasisonally will ping DB new items
-        sync: function(){
-            // Only sync non-up-to-date widgets
-            if(this.listId != undefined){
-                // If we aren't already syncing this widget
-                if(this.isSyncing === false){
-                    this.isSyncing = true;
+        // sync: function(){
+        //     // Only sync non-up-to-date widgets
+        //     if(this.listId != undefined){
+        //         // If we aren't already syncing this widget
+        //         if(this.isSyncing === false){
+        //             this.isSyncing = true;
 
                     
-                    // TODO - unsure at the time how to set this to true elsewhere
-                    //  so that i dont hvae 16 calls to this function
-                    // If this list is out of date then we will sync it
-                    if(this.isOutOfDate === true){
+        //             // TODO - unsure at the time how to set this to true elsewhere
+        //             //  so that i dont hvae 16 calls to this function
+        //             // If this list is out of date then we will sync it
+        //             if(this.isOutOfDate === true){
                     
-                        console.log("Widget " + this.listId + " syncing...");
+        //                 console.log("Widget " + this.listId + " syncing...");
                         
                         
-                        // Call DB and supply timestamp
-                        $.get('widgets/dashboard_helper/', {"keyword":"Sync", "username": username, "userid": userid, "listID": this.listId, "timestamp": this.lastSyncTimestamp, }, function(response){
-                            // Process server's response
-                            processResponse(this, response);
-                        });
-                        this.isOutOfDate = false;
-                    }
-                }
-            }
-        }, 
+        //                 // Call DB and supply timestamp
+        //                 $.get('widgets/dashboard_helper/', {"keyword":"Sync", "username": username, "userid": userid, "listID": this.listId, "timestamp": this.lastSyncTimestamp, }, function(response){
+        //                     // Process server's response
+        //                     processResponse(this, response);
+        //                 });
+        //                 this.isOutOfDate = false;
+        //             }
+        //         }
+        //     }
+        // }, 
         
         
         // // Sets the widget to be considered out of date
@@ -719,6 +722,22 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                 console.log(this.items_details);
                 console.log(this.items_quantity);
                 console.log(this.items_checkedStatus);
+                
+                
+                
+                
+                for(var i = 0; i < this.items_checkedStatus.length; i++){
+                    // var itemID = this.items_ids[i];
+                    var itemElement = $("#listView"+this.listId+" #listItem"+i);
+
+                    if(this.items_checkedStatus[i] == "1"){
+                        itemElement.addClass('checkedItem');
+                    }
+                    else{
+                        itemElement.removeClass('checkedItem');
+                    }
+
+                }
                 
             }
             else{
@@ -798,6 +817,23 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
 
 
                                 console.log(editItemsContainer);
+                                
+                                
+                                
+                                // var detailsElement = editItemsContainer.find('#editItemDetailsWrapper');
+                                // var quantity = "";
+                                // var details = "";
+                                // for(var j = 0; j < self.items_ids.length; j++){
+                                //     if(self.items_ids[j] == itemID){
+                                //         quantity = self.items_quantity[j]
+                                //         details = self.items_details[j]
+                                //     }   
+                                // }
+                                
+                                editItemElement.find("#itemQuantityValue").attr('value', itemQuantity);
+                                editItemElement.find("#itemDetailsValue").attr('value', itemDetails);
+                                editItemElement.find("#itemQuantityValue").attr('text', itemQuantity);
+                                editItemElement.find("#itemDetailsValue").attr('text', itemDetails);
                                 
                                 
                                 
@@ -917,7 +953,14 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                     $("#listView"+id+" .itemContainer").hover(
                         // Mouse enter
                         function(){
-                            var isChecked = $(this).find(".checkedStatus").text();
+                            // var itemID = $(this).find('.itemID').attr('id');
+    
+
+                            var isChecked = "False";
+                            
+                            if($(this).hasClass('checkedItem'))
+                               isChecked = "True" ;
+                            
                             // console.log(isChecked);
                             
                             if(isChecked == "False"){
@@ -931,6 +974,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             }
                             else{
                                 $(this).find("#itemUncheckButton").show();
+                                $(this).find("#itemUncheckButton").removeClass('shrink');
                                 $(this).find("#itemCheckButton").hide();
                                 $(this).find(".quantity").hide();
                             }
@@ -942,6 +986,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                         // Mouse exit
                         function(){
                             $(this).find("#itemUncheckButton").hide();
+                            $(this).find("#itemCheckButton").addClass('shrink');
                             
                             $(this).find("#itemCheckButton").hide();
                             $(this).find("#itemCheckButton").addClass('shrink');
@@ -954,38 +999,78 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                     );
                     
                     // Check item
-                    $("#listView"+id+" #checkButton").click(function(){
-                        
-                        // console.log("Item was checked");
-                        var listItem = $(this).parent().parent().parent().parent();
-                        // console.log(listItem);
-                        
-                        listItem.addClass("checkedItem");
-                        
-                        // if(self.isRemovingItem === false){
-                        //   self.isRemovingItem = true; 
-                        
-                        //     // Get the item id from the editItem id
-                        //     var itemToRemoveId = $(this).parent().parent().find(".itemID").text();
-                            
-                        //     // Get the element object to hide. Save or cancel do what is needed after element is no longer visible
-                        //     var itemElementToRemove = $(this).parent().parent().parent();
-                            
-                        //     // console.log(itemToRemoveId[0]);
-                        //     // console.log([itemToRemoveId]);
-                        //     // If we don't already have this index
-                        //     if(itemToRemoveId && !self.deletedItemIndexes.contains(itemToRemoveId)){
-                        //         console.log("Removing item");
-                        //         self.deletedItemIndexes.push(itemToRemoveId);
-                        //         self.deletedItemIndexesString += itemToRemoveId +",";
+                    $("#listView"+id+" #itemCheckButton").click(function(){
+                        self.syncLock = true;
+                        var itemID = $(this).parent().parent().parent().find('.itemID').text();
+
+                        for(var i = 0; i < self.items_ids.length; i++){
+                            if(self.items_ids[i] == itemID){
+                                if(self.items_checkedStatus[i] == "1"){
+                                    self.syncLock = false;
+                                    continue;
+                                }
+                                else{
+                                    self.items_checkedStatus[i] = "1"
+                                    
+                                    // console.log("Item was checked");
+                                    var listItem = $(this).parent().parent().parent();
+                                    // console.log(listItem);
+                                    
+                                    listItem.addClass("checkedItem");
+                                    
+                                    
+                                    self.itemsCheckedStatusString += itemID +","+ self.items_checkedStatus[i] + "|";
+                                    
+                                    
+                                    $.get('widgets/dashboard_helper/', {"keyword":"Sync", "username": username, "userid": userid, "listID": self.listId, "listItemsCheckedStatus": self.itemsCheckedStatusString}, function(response){
+                                            // Process server's response
+                                            processResponse(self, response);
+                                    });
+                                    
+                                    self.itemsCheckedStatusString = "";
+                                    self.syncLock = false;
+                                }
                                 
-                        //         // TODO - place these in a container to hide them now, show if we cancel, and remove if we save
-                        //         itemElementToRemove.hide();
-                        //         // itemElementToRemove.remove();
+                            }   
+                        }
+                    });
+                    
+                    // Uncheck item
+                    $("#listView"+id+" #itemUncheckButton").click(function(){
+                        self.syncLock = true;
+                        var itemID = $(this).parent().parent().parent().find('.itemID').text();
+
+                        for(var i = 0; i < self.items_ids.length; i++){
+                            if(self.items_ids[i] == itemID){
+                                if(self.items_checkedStatus[i] == "0"){
+                                    self.syncLock = false;
+                                    continue;
+                                }
+                                else{
+                                    self.items_checkedStatus[i] = "0"
+                                    
+                                    // console.log("Item was checked");
+                                    var listItem = $(this).parent().parent().parent();
+                                    // console.log(listItem);
+                                    
+                                    listItem.removeClass("checkedItem");
+                                    
+                                    
+                                    self.itemsCheckedStatusString += itemID +","+ self.items_checkedStatus[i] + "|";
+                                    
+                                    
+                                    $.get('widgets/dashboard_helper/', {"keyword":"Sync", "username": username, "userid": userid, "listID": self.listId, "listItemsCheckedStatus": self.itemsCheckedStatusString}, function(response){
+                                            // Process server's response
+                                            processResponse(self, response);
+                                    });
+                                    
+                                    self.itemsCheckedStatusString = "";
+                                    self.syncLock = false;
+                                }
                                 
-                        //         self.isRemovingItem = false;
-                        //     }
-                        // }
+                            }   
+                        }
+                        
                     });
                     
                     
@@ -1032,6 +1117,22 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                 itemContainerToBeReplaced.replaceWith("<div class='input-group'><span class='itemID' style='display:none'>"+itemID+"</span><span id='label'>" + newItem  + "</span><span id='itemDetailsButton' class='input-group-btn' style='display:none'><a id='itemDetails' class='btn btn-secondary btn-primary' role='button'>Details</a></span><span id='itemRemoveButton' class='input-group-btn' style='display:none'><a id='removeItem' class='btn btn-secondary btn-danger' role='button'>Remove</a></span></div>");
                                 self.isEditingItem=false;
                             }
+                            
+                            // Save and close item details edit if needed
+                    // $("#editView"+id+" #updateDetailsButton").click(function(){
+
+                            if(self.isEditingItemDetails === true){
+
+                                // $("#editView"+id+" #updateDetailsButton")
+                                // Toggle the display of item edit
+                                
+                                $(this).parent().find('#editItemDetailsWrapper [style=]').addClass('detailsClosed');
+                                $(this).parent().find('#editItemDetailsWrapper [style=]').removeClass('detailsOpen');
+                                
+                                $(this).parent().find('#editItemDetailsWrapper [style=]').hide();
+                                
+                                self.isEditingItemDetails = false;
+                            }
                         
                             
                             
@@ -1051,17 +1152,33 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                     
                                     var itemID = $(this).parent().find('.itemID').text();
                                     
+                                    var itemQuantity = $(this).parent().parent().find('#itemQuantityValue').val();
+                                    var itemDetails = $(this).parent().parent().find('#itemDetailsValue').val();
+                                    
+                                    console.log(itemQuantity);
+                                    console.log(itemDetails);
+
+                                    
                                     console.log("Getting updated item: " + item);
                                     
                                     if(modifiedItems.contains(item) === false){
                                         modifiedItems.push(item);
                                         self.itemsString += itemID +","+ item + "|";
+                                        
+                                        self.itemsQuantityString += itemID +","+ itemQuantity + "|";
+                                        self.itemsDetailsString += itemID +","+ itemDetails + "|";
+                                        
+                                        
                                         itemsCount++;
                                         
                                         // self.list_ids;
                                         
                                         // console.log(item);
                                     }
+                                    
+
+
+                                    
                                 
                                 }
                                 // console.log(itemsString);
@@ -1072,7 +1189,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             
                             var newScope = {};
                             // Connect to server with modified data in request
-                            $.get('widgets/dashboard_helper/', {"keyword":"ListDetailsEdit", "username": username, "userid": userid, "listID": self.listId, "listName": modifiedName, "listItems": self.itemsString, "listItemsModified": self.modifiedItemIndexesString, "listItemsRemoved": self.deletedItemIndexesString}, function(response){
+                            $.get('widgets/dashboard_helper/', {"keyword":"ListDetailsEdit", "username": username, "userid": userid, "listID": self.listId, "listName": modifiedName, "listItems": self.itemsString, "listItemsModified": self.modifiedItemIndexesString, "listItemsRemoved": self.deletedItemIndexesString, 'listItemsQuantity': self.itemsQuantityString, "listItemsDetails": self.itemsDetailsString}, function(response){
                                 // Process server's response
                                 newScope = processResponse(self, response);
                                 
@@ -1132,6 +1249,9 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
 
                             // Reset edit variables
                             self.itemsString = ""
+                            self.itemsQuantityString = "";
+                            self.itemsDetailsString = "";
+                            
                             self.modifiedItemIndexes = [];
                             self.modifiedItemIndexesString = "";
                             self.deletedItemIndexes = [];
@@ -1268,7 +1388,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             self.modifiedItemIndexesString += itemID +",";
                         }
                         
-                        itemContainerToBeReplaced.replaceWith("<div class='input-group'><span class='itemID' style='display:none'>"+itemID+"</span><span id='label'>" + newItem  + "</span><span id='itemDetailsButton' class='input-group-btn' style='display:none'><a id='itemDetails' class='btn btn-secondary btn-primary' role='button'>Details</a></span><span id='itemRemoveButton' class='input-group-btn' style='display:none'><a id='removeItem' class='btn btn-secondary btn-danger' role='button'>Remove</a></span></div>");
+                        itemContainerToBeReplaced.replaceWith("<div class='input-group'><span class='itemID' style='display:none'>"+itemID+"</span><span id='label'>" + newItem  + "</span><span id='itemDetailsButton' class='input-group-btn' style='display:none'><a id='itemDetails' class='btn btn-secondary btn-primary' role='button'>More</a></span><span id='itemRemoveButton' class='input-group-btn' style='display:none'><a id='removeItem' class='btn btn-secondary btn-danger' role='button'>Remove</a></span></div>");
                         self.isEditingItem=false;
                     });
                     
@@ -1294,7 +1414,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                     self.modifiedItemIndexesString += itemID +",";
                                 }
                                 
-                                itemContainerToBeReplaced.replaceWith("<div class='input-group'><span class='itemID' style='display:none'>"+itemID+"</span><span id='label'>" + newItem  + "</span><span id='itemDetailsButton' class='input-group-btn' style='display:none'><a id='itemDetails' class='btn btn-secondary btn-primary' role='button'>Details</a></span><span id='itemRemoveButton' class='input-group-btn' style='display:none'><a id='removeItem' class='btn btn-secondary btn-danger' role='button'>Remove</a></span></div>");
+                                itemContainerToBeReplaced.replaceWith("<div class='input-group'><span class='itemID' style='display:none'>"+itemID+"</span><span id='label'>" + newItem  + "</span><span id='itemDetailsButton' class='input-group-btn' style='display:none'><a id='itemDetails' class='btn btn-secondary btn-primary' role='button'>More</a></span><span id='itemRemoveButton' class='input-group-btn' style='display:none'><a id='removeItem' class='btn btn-secondary btn-danger' role='button'>Remove</a></span></div>");
                                 self.isEditingItem=false;
 
                             }
@@ -1410,6 +1530,136 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                         }
                     });
                     
+                    
+                    // Item details toggle
+                    $("#editView"+id+" #itemDetailsButton").click(function(){
+                        // if(self.isEditingSettings === true){
+                            if(self.isEditingItemDetails === false){
+                                
+                                // console.log("Set list repeat button pressed...");
+                                
+                                var itemID = $(this).parent().find('.itemID').text();
+                                console.log(itemID);
+                                
+                                var detailsElement = $(this).parent().parent().find('#editItemDetailsWrapper');
+                                
+                                
+                                // Toggle the display of item edit
+                                detailsElement.removeClass('detailsClosed');
+                                detailsElement.addClass('detailsOpen');
+                                
+                                detailsElement.show();
+                                
+                                
+                                // var quantity = ""
+                                // var details = ""
+                                // for(var i = 0; i < self.items_ids.length; i++){
+                                //     if(self.items_ids[i] == itemID){
+                                //         quantity = self.items_quantity[i]
+                                //         details = self.items_details[i]
+                                //     }   
+                                // }
+                                
+                                // detailsElement.find("#itemQuantityValue").attr('value', quantity);
+                                // detailsElement.find("#itemDetailsValue").attr('value', details);
+                                // detailsElement.find("#itemQuantityValue").attr('text', quantity);
+                                // detailsElement.find("#itemDetailsValue").attr('text', details);
+                                
+                            //     var numTags = self.list_tags.length;
+                            //     console.log("Found " + numTags + " tags");
+                                
+                            //     // Loop through the current tags
+                            //     for(var i = 0; i < numTags; i++){
+                            //         var tagName = self.list_tags[i];
+                            //         console.log(tagName);
+                                    
+                            //         var setTagElement = $("#editView"+id+" #setTagsWrapper [id="+tagName+"]");
+                            //         var editTagElement = $("#editView"+id+" #editTagsWrapper [id="+tagName+"]");
+                            //         if(setTagElement && editTagElement){
+                            //             console.log(setTagElement);
+                            //             console.log(editTagElement);
+                            //             console.log("Found correct tag element");
+ 
+                            //             // Show  setTag, hide tag
+                            //             setTagElement.show();
+                            //             editTagElement.hide();
+                            //         }
+                            //     }
+                                
+                            //     for(var j = 0; j < possibleTags.length; j++){
+                            //         var tagName = possibleTags[j];
+                            //         console.log(tagName);
+                                    
+                            //         var setTagElement = $("#editView"+id+" #setTagsWrapper [id="+tagName+"]");
+                            //         var editTagElement = $("#editView"+id+" #editTagsWrapper [id="+tagName+"]");
+                                    
+                            //         if(!self.list_tags.contains(tagName)){
+                                        
+                            //             setTagElement.hide();
+                            //             editTagElement.show();
+                            //         }
+                            //   }
+                                
+                            //     // Replace the button
+                            //     $(this).replaceWith("<button id='saveTagsButton' type='button' class='btn btn-default btn-default btn-block'>Save tags</button>");
+                                
+                                self.isEditingItemDetails = true;
+                            }
+                        // }
+                    });
+                    
+                    // Save and close item details edit
+                    $("#editView"+id+" #updateDetailsButton").click(function(){
+                        // if(self.isEditingSettings === true){
+                            if(self.isEditingItemDetails === true){
+                                
+                                // console.log("Set list repeat button pressed...");
+                                
+                                // var itemID = $(this).parent().find('.itemID');
+                                // console.log(itemID);
+                                
+                                
+                                var itemID = $(this).parent().parent().parent().parent().find('.itemID').text();
+                                console.log(itemID);
+                                
+                                
+                                var detailsElement = $(this).parent().parent().parent();
+                                
+                                
+                                var quantity = detailsElement.find("#itemQuantityValue").val();
+                                var details = detailsElement.find("#itemDetailsValue").val();
+                                
+                                for(var i = 0; i < self.items_ids.length; i++){
+                                    if(self.items_ids[i] == itemID){
+                                        
+                                        self.items_quantity[i] = quantity;
+                                        self.items_details[i] = details;
+                                        if(!self.modifiedItemIndexes.contains(itemID)){
+                                            self.modifiedItemIndexes.push(itemID);
+                                            self.modifiedItemIndexesString += itemID +",";
+                                        }
+                                    }   
+                                }
+                                
+                                detailsElement.find("#itemQuantityValue").attr('text', quantity);
+                                detailsElement.find("#itemDetailsValue").attr('text', details);
+                                
+                                
+                                
+                                detailsElement.removeClass('detailsOpen');
+                                detailsElement.addClass('detailsClosed');
+                                
+                                
+                                // Toggle the display of item edit
+                                detailsElement.hide();
+                                
+                                
+                                
+                                self.isEditingItemDetails = false;
+                            }
+                    });
+                    
+                    
                     // Other functions
                     
                     // Show buttons on hover only
@@ -1418,11 +1668,14 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                         function(){
                             // Don't show buttons if we are editing the item
                             if (self.isEditingItem === false){
-                                $(this).find("#itemDetailsButton").show();
-                                $(this).find("#itemRemoveButton").show();
-                                
-                                // Outline
-                                $(this).addClass('outlineElement');
+                                if(self.isEditingItemDetails === false){
+
+                                    $(this).find("#itemDetailsButton").show();
+                                    $(this).find("#itemRemoveButton").show();
+                                    
+                                    // Outline
+                                    $(this).addClass('outlineElement');
+                                }
                             }
                         },
                         
@@ -1430,11 +1683,13 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                         function(){
                             // Don't show buttons if we are editing the item
                             if (self.isEditingItem === false){
-                                $(this).find("#itemDetailsButton").hide();
-                                $(this).find("#itemRemoveButton").hide();
-                                
-                                // Outline
-                                $(this).removeClass('outlineElement');
+                                if(self.isEditingItemDetails === false){
+                                    $(this).find("#itemDetailsButton").hide();
+                                    $(this).find("#itemRemoveButton").hide();
+                                    
+                                    // Outline
+                                    $(this).removeClass('outlineElement');
+                                }
                             }
                         }
                     );
@@ -1466,11 +1721,13 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                         var tagName = possibleTags[i];
                                         var tagAlertElement = $("#widget" + id + " #tagDisplay #" + tagName + "TagAlert");
                                         tagAlertElement.attr('class', "tagColor UnsetColor");
+                                        tagAlertElement.find(".glyphicon").hide();
                                     }
                                     else{
                                         var tagName = possibleTags[i];
                                         var tagAlertElement = $("#widget" + id + " #tagDisplay #" + tagName + "TagAlert");
                                         tagAlertElement.attr('class', "tagColorSet " + tagName + "TagColor");
+                                        tagAlertElement.find(".glyphicon").show();
                                     }
                                 }
                                 
@@ -1576,9 +1833,11 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                     
                     // Default lists are one-time list
                     // If repeat selected
-                    $("#settingsView"+id+" #repeatButton").click(function(){
+                    $("#settingsView"+id+" #editRecurrenceContainer .dropdown-menu li").click(function(){
                         if(self.isEditingSettings === true){
-                            // console.log("Set list repeat button pressed...");
+                            console.log("Set list repeat button pressed...");
+                            
+                            $(this).parent().parent().parent().find('#recurrenceText').html( $(this).text());
                             
                         }
                     });
@@ -1597,7 +1856,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                     $("#settingsView"+id+" #addTagButton").click(function(){
                         if(self.isEditingSettings === true){
                             if(self.isEditingTags === false){
-                            
+                                
+                                $(this).parent().parent().parent().addClass('outlineElement');
                                 // console.log("Set list repeat button pressed...");
                                 
                                 // Toggle the display of edit tags
@@ -1653,6 +1913,9 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             if(self.isEditingTags === true){
                                 // console.log("Set list repeat button pressed...");
                                 
+                                $(this).parent().parent().parent().removeClass('outlineElement');
+
+                                
                                 // Toggle the display of edit tags
                                 $("#settingsView"+id+" #editTagsWrapper").hide();
                                 
@@ -1666,11 +1929,13 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                         var tagName = possibleTags[i];
                                         var tagAlertElement = $("#widget" + id + " #tagDisplay #" + tagName + "TagAlert");
                                         tagAlertElement.attr('class', "tagColor UnsetColor");
+                                        tagAlertElement.find(".glyphicon").hide();
                                     }
                                     else{
                                         var tagName = possibleTags[i];
                                         var tagAlertElement = $("#widget" + id + " #tagDisplay #" + tagName + "TagAlert");
                                         tagAlertElement.attr('class', "tagColorSet " + tagName + "TagColor");
+                                        tagAlertElement.find(".glyphicon").show();
                                     }
                                 }
                                 
@@ -1694,6 +1959,10 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                     
                                     // Hide the tag as set, show as available
                                     $(this).hide();
+                                    
+                                    // var tagAlertElement = $("#widget" + id + " #tagDisplay #" + tagName + "TagAlert");
+                                    // tagAlertElement.find(".glyphicon").hide();
+
                                     $("#editTagsWrapper [id="+tagName+"]").show();
                                     
                                     // Update local storage
@@ -1725,6 +1994,9 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                     $(this).hide();
                                     $("#settingsView"+id+" #setTagsWrapper [id="+tagName+"]").show();
                                     
+                                    // var tagAlertElement = $("#widget" + id + " #tagDisplay #" + tagName + "TagAlert");
+                                    // tagAlertElement.find(".glyphicon").show();
+
                                     // Update local storage
                                     self.list_tags.push(tagName);
                                 }
@@ -1785,6 +2057,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                         if(self.isEditingSettings === true){
                             if(self.isEditingUsers === false){
                             
+                                $(this).parent().parent().parent().addClass('outlineElement');
+
                                 // console.log("Set list repeat button pressed...");
                                 
                                 // Toggle the display of edit users
@@ -1795,6 +2069,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                 
                                 var numUsers = self.list_users.length;
                                 console.log("Found " + numUsers + " users");
+                                
+                                
                                 
                                 // // Loop through the current users and add 
                                 // for(var i = 0; i < numUsers; i++){
@@ -1842,7 +2118,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                     $("#settingsView"+id+" #cancelAddUserButton").click(function(){
                         if(self.isEditingSettings === true){
                             if(self.isEditingUsers === true){
-                                
+                                $(this).parent().parent().parent().parent().parent().removeClass('outlineElement');
+
                                 // To ensure clean user entry for next user add
                                 $("#settingsView"+id+" #setUserInput input").replaceWith("<input type='text' class='form-control' placeholder='Search for...'>");
 
@@ -1861,7 +2138,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                     $("#settingsView"+id+" #addUserButton").click(function(){
                         if(self.isEditingSettings === true){
                             if(self.isEditingUsers === true){
-                                
+                                $(this).parent().parent().parent().parent().parent().removeClass('outlineElement');
+
                                 // Get user name
                                 var userName = $("#settingsView"+id+" #setUserInput input").val();
                                 console.log(userName);

@@ -443,20 +443,37 @@ def edit_item(user_name,l_id, i_id,new_name,new_quantity,new_details,new_checked
         print "Not editing this item"
         return 1
     else:
+        print "Editing the item: "
+        print "username: "
+        print user_name
+        print "list id: "
+        print l_id
+        print "item id: "
+        print i_id
+        print "the new name: "
+        print new_name
+        print "The quantity: "
+        print new_quantity
+        print "The details: "
+        print new_details
+        
         tmp_item = items.objects.get(item_id = i_id)
-    
+        
+        print "failing after this?"
+        
         if new_name:
             tmp_item.item_name = new_name
             tmp_item.save()
-        elif new_quantity:
+        if new_quantity:
             tmp_item.item_quantity = new_quantity
             tmp_item.save()
-        elif new_details:
+        if new_details:
             tmp_item.item_details = new_details
             tmp_item.save()
-        elif new_checked_status:
+        if new_checked_status:
             tmp_item.checked_status = new_checked_status
             tmp_item.save()
+            
         if tmp_item.item_name == new_name and tmp_item.item_quantity == new_quantity and tmp_item.item_details == new_details and tmp_item.checked_status == new_checked_status:
             return 1
         else:

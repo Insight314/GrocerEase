@@ -3,11 +3,15 @@
 
 {% load i18n %}
 {% load slogans %}
+{% load staticfiles %}
 
 {% block pagename %}{% trans "Log In" %}{% endblock %}
 
 {% block content %}
+
+
 <div class="login-page">
+    <!--<img src="{% static 'LeftBar.jpg' %}" style="float:left">-->
     <div class = "center-align"><h2 class="white-text" >GrocerEase</h2><h4 class="white-text" >{% makePhrase %}</h4></div>
     <div class="form">
 <form method="post" action="">
@@ -17,10 +21,11 @@
     <input type="hidden" name="next" value="{{ next }}" />
 </form>
     </div>
-</div>
+
 <!-- Broke the line below to avoid reset password zone....-->
 <!--<p>{/% trans "Forgot your password, huh?" %} <a href="{/% url 'auth_password_reset' %}">{/% trans "Reset it" %}</a>.</p>-->
 <p class ="other-text">{% trans "Not a member?" %} <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>.</p>
+</div>
 {% endblock %}
 {% block homelink %}{% endblock %}
 

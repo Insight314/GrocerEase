@@ -225,7 +225,7 @@
             self.subscribe(name + '/configureWidget', widget.configureWidget.bind(widget));
             self.publish(name + '/configureWidget');
             
-            self.subscribe(name + '/sync', widget.sync.bind(widget));
+            // self.subscribe(name + '/sync', widget.sync.bind(widget));
             // self.subscribe(name + '/setRequiresSync', widget.setRequiresSync.bind(widget));
 
             self.subscribe(name + '/updateWidget', widget.updateWidget.bind(widget));

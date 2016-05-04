@@ -9,11 +9,21 @@
   
     <!-- Tag stuff to make it look less ghetto -->
     <div id="tagDisplay">
-      <div id="HealthyTagAlert"   class="tagColor UnsetColor"></div>
-      <div id="UnhealthyTagAlert" class="tagColor UnsetColor"></div>
-      <div id="CheapTagAlert"     class="tagColor UnsetColor"></div>
-      <div id="ExpensiveTagAlert" class="tagColor UnsetColor"></div>
-      <div id="MealTagAlert"      class="tagColor UnsetColor"></div>
+      <div id="HealthyTagAlert"   class="tagColor UnsetColor">
+        <span class="glyphicon glyphicon-leaf" style="display: none;"></span>
+      </div>
+      <div id="FavoriteTagAlert" class="tagColor UnsetColor">
+        <span class="glyphicon glyphicon-heart" style="display: none;"></span>
+      </div>
+      <div id="CheapTagAlert"     class="tagColor UnsetColor">
+        <span class="glyphicon glyphicon-usd" style="display: none;"></span>
+      </div>
+      <div id="ExpensiveTagAlert" class="tagColor UnsetColor">
+        <span class="glyphicon glyphicon-usd" style="display: none;"></span>
+      </div>
+      <div id="RecipeTagAlert" class="tagColor UnsetColor">
+        <span class="glyphicon glyphicon-bookmark"></span>
+      </div>
 
       
     </div>
@@ -35,7 +45,7 @@
                   <a id='checkButton' class='btn btn-secondary btn-success' role='button'>√</a>
               </span>
               <span id='itemUncheckButton' class="input-group-btn" style="display:none">
-                  <a id='uncheckButton' class="btn btn-secondary btn-danger" role="button">X</a>
+                  <a id='uncheckButton' class='btn btn-secondary btn-danger' role='button'>X</a>
               </span>
             </span>
             </div>
@@ -68,13 +78,33 @@
             <span class="itemID" style="display:none"></span>
             <span id='label'></span>
             <span id='itemDetailsButton' class="input-group-btn" style="display:none">
-              <a id='itemDetails' class="btn btn-secondary btn-primary" role="button">Details</a>
+              <a id='itemDetails' class="btn btn-secondary btn-primary" role="button">More</a>
             </span>
             <span id='itemRemoveButton' class="input-group-btn" style="display:none">
               <a id='removeItem' class="btn btn-secondary btn-danger" role="button">Remove</a>
             </span>
           </div>
+          
+          <div id="editItemDetailsWrapper" style="display:none">
+            <div id="extendDetails">
+              <!-- Pop open quantity/details edit -->
+              <div id='detailsTop'>Quantity</div>
+              <div class="input-group">
+                <input id="itemQuantityValue" type="text" class="form-control" placeholder="Enter item quantity">
+              </div>
+              <div id='detailsMiddle'>Details</div>
+              <div>  
+                <input id="itemDetailsValue" type="text" class="form-control" name="itemDetailsValue" placeholder="Enter item details">
+              </div>
+              <ul id='detailsBottom'>  
+                <button id='updateDetailsButton' type="button" class="btn btn-default btn-default btn-block">Close</button>
+              </ul>
+            </div>
+          </div>
+          
         </li>
+        
+      
         <!--<li id="hiddenItem">  -->
           <!-- Used to avoid .append. Is hidden until a new item is added -->
           <!-- It will then be replaced by a new item and duplicate hidden class-->
@@ -90,9 +120,9 @@
         <span><a type="button" class="btn btn-block btn-primary">Save Changes</a></span>
       </ul>
       
-      <ul id="cancelEditButton">
-        <span><a type="button" class="btn btn-block btn-danger">Cancel</a></span>
-      </ul>  
+      <!--<ul id="cancelEditButton">-->
+      <!--  <span><a type="button" class="btn btn-block btn-danger">Cancel</a></span>-->
+      <!--</ul>  -->
 
     </div>
     
@@ -100,85 +130,110 @@
     
     <!-- Settings panel, the list details are fully covered by this panel -->
     <div id="settingsView" class="viewContents" style="display: none;">
-      <h1>List Settings</h1>
-      <ul>
+      <div id="settingsContainer">
+        <h1>List Settings</h1>
         <ul>
-          <span>Recurrence</span>
           <ul>
-            <button id='defaultRepeatButton' type="button" class="btn btn-default btn-success">One-time</button>
-            <button id='repeatButton' type="button" class="btn btn-default btn-default">Repeat</button>
-          </ul>
-        </ul>
+            <div id="editRecurrenceContainer">
+              <span>Recurrence</span>
+              <ul>
+                <button id="recurrenceText" type="button" class="btn btn-default">Never</button>
+                <div class="btn-group">
+                  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                    Edit
+                    <span class="caret"></span>
 
-        <ul>
-          <span>Tags</h3>
-          <ul id="setTagsWrapper">
-            
-            <button id="Healthy" type="button" style="display: none;" class="setTag btn btn-default btn-success">Healthy</button>
-            <button id="Unhealthy" type="button" style="display: none;" class="setTag btn btn-default btn-danger">Unhealthy</button>
-            <button id="Cheap" type="button" style="display: none;" class="setTag btn btn-default btn-info">Cheap</button>
-            <button id="Expensive" type="button" style="display: none;" class="setTag btn btn-default btn-warning">Expensive</button>
-            <button id="Meal" type="button" style="display: none;" class="setTag btn btn-default btn-primary">Meal</button>
-          </ul>
-          <ul>  
-            <button id='addTagButton' type="button" class="btn btn-default btn-default btn-block">Edit tags</button>
-          </ul>
-          <ul>
-            <!-- This is UBER bad practice, but I'm not sacrificing my sanity -->
-        		<div id="editTagsWrapper" style="display:none">
-        		  <div>Available:</div>
-              <div>
-                <span>
-                  <button id="Healthy" type="button" style="display: none;" class="tag btn btn-default btn-success btn-block">Healthy</button>
-                </span>
-                <span>
-                  <button id="Unhealthy" type="button" style="display: none;" class="tag btn btn-default btn-danger btn-block">Unhealthy</button>
-                </span>
-                <span>
-                  <button id="Cheap" type="button" style="display: none;" class="tag btn btn-default btn-info btn-block">Cheap</button>
-                </span>
-                <span>
-                  <button id="Expensive" type="button" style="display: none;" class="tag btn btn-default btn-warning btn-block">Expensive</button>
-                </span>
-                <span>
-                  <button id="Meal" type="button" style="display: none;" class="tag btn btn-default btn-primary btn-block">Meal</button>
-                </span>
-              </div>
+                  </a>
+                  <ul class="dropdown-menu">
+
+                    <li><a href="#" text="Weekly">Every Week</a></li>
+                    <li><a href="#" text="Bi-weekly">Every Two Weeks</a></li>
+                    <li><a href="#" text="Monthly">Every Month</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#" text="">Never</a></li>
+                  </ul>
+                </div>
+              </ul>
+              
+               <ul>
+                <!-- This is UBER bad practice, but I'm not sacrificing my sanity -->
+            		<div id="editRecurrenceWrapper" style="display:none">
+            		  <div>Available:</div>
+                  
+                </div>
+              </ul>
             </div>
           </ul>
-        </ul>
-
-        <ul>
-          <span>Shared with</span>
-          <ul id="setUsersWrapper">
-            <!--
-            
-            <button id="[USERNAME]" type="button" class="setUser btn btn-default btn-info">Chris D.</button>
-            
-            -->
-
-          </ul>
+  
           <ul>
-            <button id="setNewUserButton" type="button" class="btn btn-default btn-default btn-block">Edit collaborators</button>
-            
-            <div id="setUserInput"class="input-group" style="display: none;">
-              <input type="text" class="form-control" placeholder="Search for...">
-              <span class="input-group-btn">
-                <button id="addUserButton" class="btn btn-default" type="button">Add</button>
-                <button id="cancelAddUserButton" class="btn btn-default btn-danger" type="button">Exit</button>
-              </span>
+            <div id='editTagsContainer'>
+              <span>Tags</span>
+              <ul id="setTagsWrapper">
+                
+                <button id="Healthy" type="button" style="display: none;" class="setTag btn btn-default btn-success">Healthy</button>
+                <button id="Favorite" type="button" style="display: none;" class="setTag btn btn-default btn-danger">Favorite</button>
+                <button id="Cheap" type="button" style="display: none;" class="setTag btn btn-default btn-info">Cheap</button>
+                <button id="Expensive" type="button" style="display: none;" class="setTag btn btn-default btn-warning">Expensive</button>
+                <button id="Recipe" type="button" style="display: none;" class="setTag btn btn-default btn-primary">Recipe</button>
+              </ul>
+              <ul>  
+                <a id='addTagButton' type="button" class="btn btn-default btn-default btn-block">Edit tags</a>
+              </ul>
+              <ul>
+                <!-- This is UBER bad practice, but I'm not sacrificing my sanity -->
+            		<div id="editTagsWrapper" style="display:none">
+            		  <div>Available:</div>
+                  <div>
+                    <span>
+                      <button id="Healthy" type="button" style="display: none;" class="tag btn btn-default btn-success btn-block">Healthy</button>
+                    </span>
+                    <span>
+                      <button id="Favorite" type="button" style="display: none;" class="tag btn btn-default btn-danger btn-block">Favorite</button>
+                    </span>
+                    <span>
+                      <button id="Cheap" type="button" style="display: none;" class="tag btn btn-default btn-info btn-block">Cheap</button>
+                    </span>
+                    <span>
+                      <button id="Expensive" type="button" style="display: none;" class="tag btn btn-default btn-warning btn-block">Expensive</button>
+                    </span>
+                    <span>
+                      <button id="Recipe" type="button" style="display: none;" class="tag btn btn-default btn-primary btn-block">Recipe</button>
+                    </span>
+                  </div>
+                </div>
+              </ul>
             </div>
-            
           </ul>
-        </ul>
-        
-        <ul>
-          <span>Delete or leave list</span>
+  
           <ul>
-            <a id="leaveListButton" type="button" class="btn btn-block btn-danger">Delete/Leave List</a>
+            <div id="editUsersContainer">
+              <span>Shared with</span>
+              <!-- Holds the username badges-->
+              <ul id="setUsersWrapper"></ul>
+              <!-- Set the new user form/exit-->
+              <ul>
+                <button id="setNewUserButton" type="button" class="btn btn-default btn-default btn-block">Edit collaborators</button>
+                
+                <div id="setUserInput"class="input-group" style="display: none;">
+                  <input type="text" class="form-control" placeholder="Search for...">
+                  <span class="input-group-btn">
+                    <button id="addUserButton" class="btn btn-default" type="button">Add</button>
+                    <button id="cancelAddUserButton" class="btn btn-default btn-danger" type="button">Exit</button>
+                  </span>
+                </div>
+                
+              </ul>
+            </div>
+          </ul>
+          
+          <ul id="deleteList">
+            <span >Delete or leave list</span>
+            <ul>
+              <a id="leaveListButton" type="button" class="btn btn-block btn-danger">Delete/Leave List</a>
+            </ul>
           </ul>
         </ul>
-      </ul>
+      </div>
       
       
       <div style="height:5%"></div>
@@ -186,9 +241,9 @@
         <span><a type="button" class="btn btn-block btn-primary">Save Settings</a></span>
       </ul>
       
-      <ul id="exitSettingsButton">
-        <span><a type="button" class="btn btn-block btn-danger">Exit</a></span>
-      </ul> 
+      <!--<ul id="exitSettingsButton">-->
+      <!--  <span><a type="button" class="btn btn-block btn-danger">Exit</a></span>-->
+      <!--</ul> -->
       
     </div>
     </div>
