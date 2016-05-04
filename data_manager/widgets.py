@@ -308,7 +308,7 @@ class DashboardHelper(Widget):
             if split_item[0] == '-1':
                 try:
                     print "creating item"
-                    if views.create_item(username,list_id,split_item[1],'details','quantity') == 1:
+                    if views.create_item(username,list_id,split_item[1],'','') == 1:
                         dbAck = "Success"    
                     else:
                         print "Item creation failed"
@@ -402,7 +402,7 @@ class DashboardHelper(Widget):
                     print split_item
                     
                     
-                    if views.edit_item(username,list_id,split_item[0],split_item[1],split_item[2],split_item[3],0) == 1:
+                    if views.edit_item(username,list_id,split_item[0],split_item[1],split_item[2],split_item[3]) == 1:
                         dbAck = "Success"
                     else:
                         dbAck = "Fail"
