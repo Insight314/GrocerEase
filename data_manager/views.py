@@ -183,7 +183,7 @@ def index(request):
         if request.user.is_authenticated():
             return redirect('data_manager/gen', request)
         else:    
-            return redirect('accounts/login', request) #omg unique and unknown 
+            return redirect('/accounts/login', request) #omg unique and unknown 
 
 
 
@@ -438,7 +438,7 @@ def remove_item(i): #i is id or whatever
         return 0
 
 #edits the attributes of an item
-def edit_item(user_name,l_id, i_id,new_name,new_quantity,new_details):
+def edit_item(user_name,l_id, i_id,new_name,new_quantity,new_details,new_checked_status):
     if i_id == str(-1):
         print "Not editing this item"
         return 1
@@ -463,11 +463,18 @@ def edit_item(user_name,l_id, i_id,new_name,new_quantity,new_details):
         
         if new_name:
             tmp_item.item_name = new_name
+            tmp_item.save()
+        if new_quantity:
             tmp_item.item_quantity = new_quantity
+            tmp_item.save()
+        if new_details:
             tmp_item.item_details = new_details
             tmp_item.save()
+        if new_checked_status:
+            tmp_item.checked_status = new_checked_status
+            tmp_item.save()
             
-        if tmp_item.item_name == new_name and tmp_item.item_quantity == new_quantity and tmp_item.item_details == new_details:
+        if tmp_item.item_name == new_name and tmp_item.item_quantity == new_quantity and tmp_item.item_details == new_details and tmp_item.checked_status == new_checked_status:
             return 1
         else:
             return 0

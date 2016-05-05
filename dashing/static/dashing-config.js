@@ -70,7 +70,7 @@ function processResponse(widget, response){
         }
         
         // Process list details
-        if(keyword == "InitialLoad" || keyword == "ListDetailsEdit" || keyword == "AddListRequest" || keyword == "Sync"){
+        if(keyword == "InitialLoad" || keyword == "ListDetailsEdit" || keyword == "AddListRequest"){
 
             var list_ids = response['list_ids'];
             var list_names = response['list_names'];
@@ -195,16 +195,17 @@ function processResponse(widget, response){
                     addLiveList(list_id, list_name, itemsAdded, itemsFormatted, null, null);
                     return;
                 }
+            }
                 
-                // Sync response processing
-                //  If we are here, then db must have sent info so update the widget
+            // Sync response processing
+            //  If we are here, then db must have sent info so update the widget
+            if(keyword == "Sync"){
+                // If sync receives a failure ack
                 if(keyword == "Sync"){
-                    // If sync receives a failure ack
-                    if(keyword == "Sync"){
-                        console.log("List sync success");
-                    }
+                    console.log("List sync success");
                 }
             }
+            
         }
         
         
@@ -618,6 +619,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             }
                         }
                         
+
+                        
                         
                         $("#listView" + id).show();
                     }
@@ -723,26 +726,26 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                 console.log(this.items_quantity);
                 console.log(this.items_checkedStatus);
                 
+            }
                 
-                
-                
+                var itemElements = $(".widgetContainer .itemContainer);
+
                 for(var i = 0; i < this.items_checkedStatus.length; i++){
                     // var itemID = this.items_ids[i];
-                    var itemElement = $("#listView"+this.listId+" #listItem"+i);
 
-                    if(this.items_checkedStatus[i] == "1"){
-                        itemElement.addClass('checkedItem');
+                    if(this.items_checkedStatus[i] == "True"){
+                        itemElements[i].addClass('checkedItem');
                     }
                     else{
-                        itemElement.removeClass('checkedItem');
+                        itemElements[i].removeClass('checkedItem');
                     }
 
                 }
                 
-            }
-            else{
-                console.log("Could not set scope, response was not populated")
-            }
+            // }
+            // else{
+            //     console.log("Could not set scope, response was not populated")
+            // }
         },
         
         // Handles the button listeners for each view of the widget
@@ -754,7 +757,20 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
 
                     var currentItemsInEditList = self.itemCount;
                     
+                    self.setScope(null);
+
                     
+                    // for(var i = 0; i < self.items_checkedStatus.length; i++){
+                    //     // var itemID = this.items_ids[i];
+                    //     var itemElement = $("#listView"+self.listId);//+" #listItem"+i);
+    
+                    //     if(self.items_checkedStatus[i] == "True"){
+                    //         itemElement.addClass('checkedItem');
+                    //     }
+                    //     else{
+                    //         itemElement.removeClass('checkedItem');
+                    //     }
+                    // }
                     
                     // ########################
                     // List View Main Buttons
@@ -1799,6 +1815,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                 // Remove etra space from settings view
                                 var newWidgetSize = self.row;
                                 $(".gridster ul").data('gridster').resize_widget(widget,1,newWidgetSize);
+                                document.location.reload();
+
                             });
                             
                             $("#settingsView"+id).hide();

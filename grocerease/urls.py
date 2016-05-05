@@ -19,7 +19,7 @@ from django.contrib import admin
 
 # Dashing uses its own router to generate urls
 from dashing.utils import router
-
+# from data_manager import views
 
 # Custom Lists Widget if not defined within dashing
 # Widgets accessed this way are defined within the specified apps widgets.py file

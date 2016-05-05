@@ -48,14 +48,14 @@
   </head>
   <body>
     
-    <img src="{% static 'LeftBar.jpg' %}" style="float:left">
-    <img src="{% static 'RightBar.jpg' %}" style="float:right">
+    <img src="{% block LeftSide %}{% static 'LeftBar.jpg' %}{% endblock %}" style="float:left">
+    <img src="{% block RightSide %}{% static 'RightBar.jpg' %}{% endblock %}" style="float:right">
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="{% static 'css/materialize/js/materialize.min.js' %}"></script>
     
 
       {% block body_block %}{% endblock %}{% block content %}
-      <div class = "center-align"><h2 class="white-text" >GrocerEase</h2><h4 class="white-text" >{% makePhrase %}</h4></div>
+      <div class = "center-align"><h2 class="white-text" >GrocerEase</h2><h4 class="white-text" >{% block slogan %}{% makePhrase %}{% endblock %}</h4></div>
       <div class="form">
         
             {% block message %}Default Template!{% endblock %}

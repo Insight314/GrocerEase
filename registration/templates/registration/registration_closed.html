@@ -1,6 +1,12 @@
 {% extends "registration/registration_base.html" %}
 {% load i18n %}
+{% load staticfiles %}
+{% load TrashSlogans %}
 {% block pagename %}{% trans "Registration Closed" %}{% endblock %}
 {% block message %}{% trans "Registration is Closed!" %}
 <br><br>
 {% trans "We'll have none of your trolling!" %}{% endblock %}
+<!--<img src = "{% static 'thumbsupcarla.PNG' %}" class="center-align">-->
+{% block LeftSide %}{% static 'thumbsupcarla.PNG' %}{% endblock %}
+{% block RightSide %}{% static 'thumbsupcarlaFlip.PNG' %}{% endblock %}
+{% block slogan %}{% makePhrase %}{% endblock %}
