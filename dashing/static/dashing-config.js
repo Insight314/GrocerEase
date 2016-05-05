@@ -728,18 +728,24 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                 
             }
                 
-                var itemElements = $(".widgetContainer .itemContainer);
+                var itemElement = $("#widget"+this.listWidgetIndex).find(".itemContainer");//+" #listItem"+i);
 
-                for(var i = 0; i < this.items_checkedStatus.length; i++){
-                    // var itemID = this.items_ids[i];
-
-                    if(this.items_checkedStatus[i] == "True"){
-                        itemElements[i].addClass('checkedItem');
+                if(itemElement != undefined){
+                    for(var i = 0; i < this.items_checkedStatus.length; i++){
+                        // var itemID = this.items_ids[i];
+                        // var itemElement = $(".widgetContainer").find(".itemContainer");//+" #listItem"+i);
+                        // var itemID = itemElement
+        
+                        if(itemElement[i] != undefined){
+                            if(this.items_checkedStatus[i] == "True"){
+                                $(itemElement[i]).addClass('checkedItem');
+                            }
+                            // else{
+                            //     $(itemElement[i]).removeClass('checkedItem');
+                            // }
+                        }
+        
                     }
-                    else{
-                        itemElements[i].removeClass('checkedItem');
-                    }
-
                 }
                 
             // }
@@ -993,6 +999,8 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                                 $(this).find("#itemUncheckButton").removeClass('shrink');
                                 $(this).find("#itemCheckButton").hide();
                                 $(this).find(".quantity").hide();
+                                
+                                
                             }
                             
                             // Outline
@@ -1875,7 +1883,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                         if(self.isEditingSettings === true){
                             if(self.isEditingTags === false){
                                 
-                                $(this).parent().parent().parent().addClass('outlineElement');
+                                $(this).parent().parent().parent().addClass('outlineElement_Dark');
                                 // console.log("Set list repeat button pressed...");
                                 
                                 // Toggle the display of edit tags
@@ -1931,7 +1939,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                             if(self.isEditingTags === true){
                                 // console.log("Set list repeat button pressed...");
                                 
-                                $(this).parent().parent().parent().removeClass('outlineElement');
+                                $(this).parent().parent().parent().removeClass('outlineElement_Dark');
 
                                 
                                 // Toggle the display of edit tags
@@ -2075,7 +2083,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                         if(self.isEditingSettings === true){
                             if(self.isEditingUsers === false){
                             
-                                $(this).parent().parent().parent().addClass('outlineElement');
+                                $(this).parent().parent().parent().addClass('outlineElement_Dark');
 
                                 // console.log("Set list repeat button pressed...");
                                 
@@ -2136,7 +2144,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                     $("#settingsView"+id+" #cancelAddUserButton").click(function(){
                         if(self.isEditingSettings === true){
                             if(self.isEditingUsers === true){
-                                $(this).parent().parent().parent().parent().parent().removeClass('outlineElement');
+                                $(this).parent().parent().parent().parent().parent().removeClass('outlineElement_Dark');
 
                                 // To ensure clean user entry for next user add
                                 $("#settingsView"+id+" #setUserInput input").replaceWith("<input type='text' class='form-control' placeholder='Search for...'>");
@@ -2156,7 +2164,7 @@ function addLiveList(list_id, list_name, num_items, list_items, list_users, list
                     $("#settingsView"+id+" #addUserButton").click(function(){
                         if(self.isEditingSettings === true){
                             if(self.isEditingUsers === true){
-                                $(this).parent().parent().parent().parent().parent().removeClass('outlineElement');
+                                $(this).parent().parent().parent().parent().parent().removeClass('outlineElement_Dark');
 
                                 // Get user name
                                 var userName = $("#settingsView"+id+" #setUserInput input").val();

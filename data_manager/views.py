@@ -438,7 +438,7 @@ def remove_item(i): #i is id or whatever
         return 0
 
 #edits the attributes of an item
-def edit_item(user_name,l_id, i_id,new_name,new_quantity,new_details,new_checked_status):
+def edit_item(user_name,l_id, i_id,new_name,new_quantity,new_details):
     if i_id == str(-1):
         print "Not editing this item"
         return 1
@@ -463,18 +463,11 @@ def edit_item(user_name,l_id, i_id,new_name,new_quantity,new_details,new_checked
         
         if new_name:
             tmp_item.item_name = new_name
-            tmp_item.save()
-        if new_quantity:
             tmp_item.item_quantity = new_quantity
-            tmp_item.save()
-        if new_details:
             tmp_item.item_details = new_details
             tmp_item.save()
-        if new_checked_status:
-            tmp_item.checked_status = new_checked_status
-            tmp_item.save()
             
-        if tmp_item.item_name == new_name and tmp_item.item_quantity == new_quantity and tmp_item.item_details == new_details and tmp_item.checked_status == new_checked_status:
+        if tmp_item.item_name == new_name and tmp_item.item_quantity == new_quantity and tmp_item.item_details == new_details:
             return 1
         else:
             return 0
