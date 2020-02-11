@@ -1,4 +1,4 @@
-Django==1.9
+Django==1.11.28
 django-bootstrap-toolkit==2.15.0
 django-bootstrap3==6.2.2
 django-phonenumber-field==1.0.0
